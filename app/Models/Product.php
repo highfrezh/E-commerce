@@ -36,7 +36,7 @@ class Product extends Model
     ];
 
     public function category(){
-        return $this->belongsTo(Category::class, 'category_id')->select('id', 'category_name');
+        return $this->belongsTo(Category::class, 'category_id')->select('id', 'category_name','url');
     }
 
     public function section(){

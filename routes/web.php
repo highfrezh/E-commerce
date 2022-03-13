@@ -24,6 +24,7 @@ use App\Http\Controllers\Front\FrontProductsController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+use App\Models\Category;
 
 Auth::routes();
 
@@ -89,7 +90,22 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
 Route::namespace('Front')->group(function(){
     // Home Page route
     Route::get('/', [IndexController::class, 'index']);
+    
     // Listing/Categories Route
-    Route::get('/{url}', [FrontProductsController::class, 'listing']);
+    // Get category url's
+    $catUrls = Category::select('url')->where('status',1)->get()->pluck('url')->toArray();
+    foreach ($catUrls as $url) {
+        Route::get('/'.$url, [FrontProductsController::class, 'listing']);
+    }
+    // product Details route
+    Route::get('/product/{id}', [FrontProductsController::class, 'detail']);
 
+    // Get Product Attribute Price
+    Route::post('/get-product-price', [FrontProductsController::class, 'getProductPrice']);
+
+    // Add To cart Route
+    Route::post('/add-to-cart', [FrontProductsController::class, 'addToCart']);
+    //Cart Route
+    Route::get('/cart', [FrontProductsController::class, 'cart']);
+    
 });
