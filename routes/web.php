@@ -1,14 +1,14 @@
 <?php
 
+use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Front\IndexController;
+use App\Http\Controllers\Front\UsersController;
 use App\Http\Controllers\Admin\BannersController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductsController;
-use App\Http\Controllers\Front\FrontProductsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +24,8 @@ use App\Http\Controllers\Front\FrontProductsController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-use App\Models\Category;
+use App\Http\Controllers\Admin\ProductsController;
+use App\Http\Controllers\Front\FrontProductsController;
 
 Auth::routes();
 
@@ -107,5 +108,26 @@ Route::namespace('Front')->group(function(){
     Route::post('/add-to-cart', [FrontProductsController::class, 'addToCart']);
     //Cart Route
     Route::get('/cart', [FrontProductsController::class, 'cart']);
+
+    //update cart item Quantity
+    Route::post('/update-cart-item-qty', [FrontProductsController::class, 'updateCartItemQty']);
+    
+    //delete cart item 
+    Route::post('/delete-cart-item', [FrontProductsController::class, 'deleteCartItem']);
+
+    //login/Register Routes
+    Route::get('/login-register',[UsersController::class, 'loginRegister']);
+
+    //Login User Routes
+    Route::post('/login',[UsersController::class, 'loginUser']);
+
+    //Register User Routes
+    Route::post('/register', [UsersController::class, 'registerUser']);
+
+    //Check if email already exists
+    Route::match(['get','post'],'/check-email', [UsersController::class, 'checkEmail']);
+
+    //Logout User Routes
+    Route::get('/logout', [UsersController::class, 'logoutUser']);
     
 });

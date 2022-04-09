@@ -1,3 +1,4 @@
+<?php use App\Models\Product; ?>
 @extends('layouts.front_layout.front_layout')
 @section('content')
 <div class="span9">
@@ -64,7 +65,15 @@
             <form action="{{ url('add-to-cart') }}" method="post" class="form-horizontal qtyFrm">@csrf
                 <input type="hidden" name="product_id" value="{{ $productDetails['id'] }}">
                 <div class="control-group">
-                    <h4 class="getAttrPrice">${{ $productDetails['product_price'] }}</h4>
+                    <?php $discounted_price = Product::getDiscountedPrice($productDetails['id']); ?>
+                    <h4 class="getAttrPrice">
+                        @if($discounted_price > 0)
+                        <del>${{ $productDetails['product_price'] }}</del>
+                        <font color="red">${{ $discounted_price }}</font>
+                        @else
+                        ${{ $productDetails['product_price'] }}
+                        @endif
+                    </h4>
                     <select name="size" id="getPrice" product-id="{{ $productDetails['id'] }}" class="span2 pull-left"
                         required>
                         <option value="" selected>Select Size</option>

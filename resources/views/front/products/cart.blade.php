@@ -1,4 +1,3 @@
-<?php use App\Models\Cart; ?>
 @extends('layouts.front_layout.front_layout')
 @section('content')
 <div class="span9">
@@ -45,57 +44,26 @@
             </tr>
         </tbody>
     </table>
+    @if (Session::has('error_message'))
+    <div class="alert alert-danger alert-dismissible show" role="alert">
+        {{ Session::get('error_message') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span arial-hidden="true">&times;</span>
+        </button>
+    </div>
+    @endif
+    @if (Session::has('success_message'))
+    <div class="alert alert-success alert-dismissible show" role="alert">
+        {{ Session::get('success_message') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span arial-hidden="true">&times;</span>
+        </button>
+    </div>
+    @endif
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th colspan="2">Description</th>
-                <th>Quantity/Update</th>
-                <th>Unit Price</th>
-                <th>Discount</th>
-                <th>Sub Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php $total_price = 0; ?>
-            @foreach($userCartItems as $item)
-            <?php $attrPrice = Cart::getProductAttrPrice($item['product_id'], $item['size']);?>
-            <tr>
-                <td> <img width="60" src="{{ asset('images/product_images/small/'.$item['product']['main_image']) }}"
-                        alt=""></td>
-                <td colspan="2">{{ $item['product']['product_name'] }}({{ $item['product']['product_code'] }})<br>
-                    Color : {{ $item['product']['product_color'] }} <br>
-                    Size: {{ $item['size'] }}
-                </td>
-                <td>
-                    <div class="input-append"><input class="span1" style="max-width:34px"
-                            value="{{ $item['quantity'] }}" id="appendedInputButtons" size="16" type="text"><button
-                            class="btn" type="button"><i class="icon-minus"></i></button><button class="btn"
-                            type="button"><i class="icon-plus"></i></button><button class="btn btn-danger"
-                            type="button"><i class="icon-remove icon-white"></i></button> </div>
-                </td>
-                <td>${{ $attrPrice }}</td>
-                <td>$0.00</td>
-                <td>$ {{ $attrPrice * $item['quantity'] }}</td>
-            </tr>
-            <?php $total_price = $total_price + ($attrPrice * $item['quantity']); ?>
-            @endforeach
-            <tr>
-                <td colspan="6" style="text-align:right">Total Price: </td>
-                <td>${{ $total_price }}</td>
-            </tr>
-            <tr>
-                <td colspan="6" style="text-align:right">Total Discount: </td>
-                <td> $0.00</td>
-            </tr>
-            <tr>
-                <td colspan="6" style="text-align:right"><strong>GRAND TOTAL (${{ $total_price }} - $0.00) =</strong>
-                </td>
-                <td class="label label-important" style="display:block"> <strong>${{ $total_price }}</strong></td>
-            </tr>
-        </tbody>
-    </table>
+    <div id="AppendCartItems">
+        @include('front.products.cart_items')
+    </div>
 
 
     <table class="table table-bordered">
