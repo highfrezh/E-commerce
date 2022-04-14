@@ -277,4 +277,67 @@ $(document).ready(function(){
 				},
 			}
 		});
+
+        // validate account form on keyup and submit
+		$("#accountForm").validate({
+			rules: {
+				name: "required",
+				mobile: {
+					required: true,
+					minlength: 10,
+					maxlength: 11,
+					digits: true
+				},
+			},
+			messages: {
+				name: "Please enter your Name",
+				mobile: {
+					required: "Please enter a mobile",
+					minlength: "Your mobile must consist of 10 characters",
+					maxlength: "Your mobile must consist of 10 characters",
+					digits: "Please enter your valid mobile"
+				}
+			}
+		});
+
+        // validate change password form on keyup and submit
+		$("#passwordForm").validate({
+			rules: {
+				current_pwd: {
+					required: true,
+					minlength: 6,
+					maxlength: 20
+				},
+				new_pwd: {
+					required: true,
+					minlength: 6,
+					maxlength: 20
+				},
+				confirm_pwd: {
+					required: true,
+					minlength: 6,
+					maxlength: 20,
+                    equalTo:"#new_pwd"
+				},
+			}
+		});
+
+        //Check Current User Password
+        $("#current_pwd").keyup(function(){
+            var current_pwd = $(this).val();
+            $.ajax({
+                type: 'post',
+                url: '/check-user-pwd',
+                data:{current_pwd:current_pwd},
+                success:function(resp) {
+                    if(resp == "false"){
+                        $("#chkPwd").html("<font color='red'>Current Password is Incorrect</font>");
+                    }else{
+                        $("#chkPwd").html("<font color='green'>Current Password is Correct</font>");
+                    }
+                },error:function() {
+                    alert("Error");
+                }
+            })
+        });
 });

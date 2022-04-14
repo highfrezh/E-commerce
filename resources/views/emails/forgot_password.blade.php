@@ -14,31 +14,13 @@
             <td>Dear {{ $name }}</td>
         </tr>
         <tr>
-            <td>Welcome to Frezhwebsite. Your account is activated and details are as below:-</td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>Name: {{ $name }}</td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>Mobile: {{ $mobile }}</td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
+            <td>You have requested to recover your password. New password is as below:-</td>
         </tr>
         <tr>
             <td>Email: {{ $email }}</td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>Password: ***** (as chosen by you)</td>
+            <td>Password: {{ $password }}</td>
         </tr>
         <tr>
             <td>&nbsp;</td>

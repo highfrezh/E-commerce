@@ -116,7 +116,7 @@ Route::namespace('Front')->group(function(){
     Route::post('/delete-cart-item', [FrontProductsController::class, 'deleteCartItem']);
 
     //login/Register Routes
-    Route::get('/login-register',[UsersController::class, 'loginRegister']);
+    Route::get('/login-register', [UsersController::class, 'loginRegister']);
 
     //Login User Routes
     Route::post('/login',[UsersController::class, 'loginUser']);
@@ -129,5 +129,26 @@ Route::namespace('Front')->group(function(){
 
     //Logout User Routes
     Route::get('/logout', [UsersController::class, 'logoutUser']);
+    
+    //Confirm Account Route
+    Route::match(['GET','POST'],'/confirm/{code}', [UsersController::class, 'confirmAccount']);
+
+    Route::group(['middleware'=>['auth']],function(){
+
+        //forgot password Route
+        Route::match(['GET','POST'],'/forgot-password', [UsersController::class, 'forgotPassword']);
+    
+        //Users Account Route
+        Route::match(['GET','POST'],'/account', [UsersController::class, 'account']);
+        
+        // Check User password
+        Route::post('/check-user-pwd', [UsersController::class, 'chkUserPassword']);
+        
+        //Update User Password
+        Route::post('/update-user-pwd', [UsersController::class, 'updateUserPassword']);
+    });
+
+
+
     
 });
