@@ -1,14 +1,14 @@
 <?php
 
+use App\Models\CmsPage;
 use App\Models\Category;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CmsController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Front\IndexController;
 use App\Http\Controllers\Front\UsersController;
-use App\Http\Controllers\Admin\BannersController;
-use App\Http\Controllers\Admin\SectionController;
-use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\front\OrdersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,10 +22,24 @@ use App\Http\Controllers\Admin\CategoryController;
 */
 
 // Route::get('/', function () {
-//     return view('welcome');
-// });
+    //     return view('welcome');
+    // });
+use App\Http\Controllers\Front\PaypalController;
+use App\Http\Controllers\Admin\BannersController;
+use App\Http\Controllers\Admin\CouponsController;
+use App\Http\Controllers\Admin\RatingsController;
+use App\Http\Controllers\Admin\SectionController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\ProductsController;
+use App\Http\Controllers\Admin\ShippingController;
+use App\Http\Controllers\Front\FrontCmsController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\front\NewsletterController;
+use App\Http\Controllers\Admin\AdminOrdersController;
+use App\Http\Controllers\Front\FrontRatingController;
 use App\Http\Controllers\Front\FrontProductsController;
+use App\Http\Controllers\Admin\AdminNewsletterController;
 
 Auth::routes();
 
@@ -84,10 +98,68 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
         Route::get('banner', [BannersController::class, 'banners']);
         Route::post('update-banner-status', [BannersController::class, 'updateBannerStatus']);
         Route::get('delete-banner/{id}', [BannersController::class, 'deleteBanner']);
+        
+        //Coupon Routes  {id?} is only worek for the edit functionality
+        Route::get('coupons', [CouponsController::class, 'coupons']);
+        Route::post('update-coupons-status', [CouponsController::class, 'updateCouponStatus']);
+        Route::match(['get', 'post'], 'add-edit-coupon/{id?}', [CouponsController::class, 'addEditCoupon']);
+        Route::get('delete-coupon/{id}', [CouponsController::class, 'deleteCoupon']);
+        
+        //Order Routes  {id?} is only worek for the edit functionality
+        Route::get('orders', [AdminOrdersController::class, 'orders']);
+        Route::get('orders/{id}', [AdminOrdersController::class, 'orderDetails']);
+        Route::post('update-order-status', [AdminOrdersController::class, 'updateOrderStatus']);
+        Route::get('view-order-invoice/{id}', [AdminOrdersController::class, 'viewOrderInvoice']);
+        Route::get('print-pdf-invoice/{id}', [AdminOrdersController::class, 'printPDFInvoice']);
+        
+        //Shipping Charges Routes
+        Route::get('view-shipping-charges', [ShippingController::class, 'viewShippingCharges']);
+        Route::match(['get', 'post'], 'edit-shipping-charges/{id?}', [ShippingController::class, 'editShippingCharges']);
+        Route::post('update-shipping-status', [ShippingController::class, 'updateShippingStatus']);
+        
+        //Front User for  Route
+        Route::get('users',[AdminUserController::class, 'users']);
+        Route::post('update-user-status', [AdminUserController::class, 'updateUserStatus']);
+        
+        //CMS pages Route
+        Route::get('cms-pages',[CmsController::class, 'cmspages']);
+        Route::post('update-cms-pages-status', [CmsController::class, 'updateCmsPageStatus']);
+        Route::match(['get', 'post'], 'add-edit-cms-page/{id?}', [CmsController::class, 'addEditCmsPage']);
+        Route::get('delete-cms-page/{id}', [CmsController::class, 'deleteCmsPage']);
+        
+        // Admins / Sub-Admin
+        Route::get('admins-subadmins',[AdminController::class, 'adminsSubadmins']);
+        Route::match(['get', 'post'], 'add-edit-admin-subadmin/{id?}', [AdminController::class, 'addEditAdminSubadmin']);
+        Route::post('update-admin-status', [AdminController::class, 'updateAdminStatus']);
+        Route::get('delete-admin/{id}', [AdminController::class, 'deleteAdmin']);
+        Route::match(['get', 'post'], 'update-role/{id?}', [AdminController::class, 'updateRole']);
+        
+        //Currencies
+        Route::get('currencies',[CurrencyController::class, 'currencies']);
+        Route::post('update-currency-status', [CurrencyController::class, 'updateCurrencyStatus']);
+        Route::match(['get', 'post'], 'add-edit-currency/{id?}', [CurrencyController::class, 'addEditCurrency']);
+        Route::get('delete-currency/{id}', [CurrencyController::class, 'deleteCurrency']);
+        
+        //Ratings 
+        Route::get('ratings', [RatingsController::class, 'ratings']);
+        Route::post('update-rating-status', [RatingsController::class, 'updateRatingStatus']);
+        
+        //Return Request
+        Route::get('return-requests',[AdminOrdersController::class, 'returnRequests']);        
+        Route::post('return-requests/update',[AdminOrdersController::class, 'returnRequestUpdate']);        
+        
+        //Exchange Request
+        Route::get('exchange-requests',[AdminOrdersController::class, 'exchangeRequests']);
+        Route::post('exchange-requests/update',[AdminOrdersController::class, 'exchangeRequestUpdate']);
+        
+        // Newsletter Subscriber
+        Route::get('newsletter-subscribers',[AdminNewsletterController::class, 'newsletterSubscribers']);
+        Route::post('update-subscriber-status', [AdminNewsletterController::class, 'updateSubscriberStatus']);
+        Route::get('delete-subscriber/{id}', [AdminNewsletterController::class, 'deleteSubscriber']);
     });
 });
 
-//front end route
+//FRONT END ROUTE
 Route::namespace('Front')->group(function(){
     // Home Page route
     Route::get('/', [IndexController::class, 'index']);
@@ -97,6 +169,12 @@ Route::namespace('Front')->group(function(){
     $catUrls = Category::select('url')->where('status',1)->get()->pluck('url')->toArray();
     foreach ($catUrls as $url) {
         Route::get('/'.$url, [FrontProductsController::class, 'listing']);
+    }
+
+    // CMS Route
+    $cmsUrls = CmsPage::select('url')->where('status',1)->get()->pluck('url')->toArray();
+    foreach ($cmsUrls as $url) {
+        Route::get('/'.$url, [FrontCmsController::class, 'cmsPage']);
     }
     // product Details route
     Route::get('/product/{id}', [FrontProductsController::class, 'detail']);
@@ -132,20 +210,82 @@ Route::namespace('Front')->group(function(){
     
     //Confirm Account Route
     Route::match(['GET','POST'],'/confirm/{code}', [UsersController::class, 'confirmAccount']);
+    
+    //forgot password Route
+    Route::match(['GET','POST'],'/forgot-password', [UsersController::class, 'forgotPassword']);
+    
+    //Search Functionality Route
+    Route::get('/search-products', [FrontProductsController::class, 'listing']);
+    
+    //Contact us Route
+    Route::match(['GET','POST'],'/contact', [FrontCmsController::class, 'contact']);
+
+    //Add Rating Route
+    Route::post('/add-rating', [FrontRatingController::class, 'addRating']);
+
+    //Newsletter Subscriber Route
+    Route::post('/add-subscriber-email', [NewsletterController::class, 'addSubscriber']);
 
     Route::group(['middleware'=>['auth']],function(){
-
-        //forgot password Route
-        Route::match(['GET','POST'],'/forgot-password', [UsersController::class, 'forgotPassword']);
-    
         //Users Account Route
         Route::match(['GET','POST'],'/account', [UsersController::class, 'account']);
+
+        //Users Orders
+        Route::get('/orders', [OrdersController::class, 'orders']);
         
+        //user order details
+        Route::get('/orders/{id}', [OrdersController::class, 'orderDetails']);
+        
+        //user order cancel
+        Route::match(['GET','POST'],'/orders/{id}/cancel', [OrdersController::class, 'orderCancel']);
+        
+        //user order retrun
+        Route::match(['GET','POST'],'/orders/{id}/return', [OrdersController::class, 'orderReturn']);
+
+        //get-product-sizes for exchange
+        Route::post('get-product-sizes', [OrdersController::class, 'getProductSizes']);
+
         // Check User password
         Route::post('/check-user-pwd', [UsersController::class, 'chkUserPassword']);
         
         //Update User Password
         Route::post('/update-user-pwd', [UsersController::class, 'updateUserPassword']);
+        
+        // Apply coupon route
+        Route::post('/apply-coupon', [FrontProductsController::class, 'applyCoupon']);
+        
+        //Checkout page Route
+        Route::match(['GET','POST'],'/checkout', [FrontProductsController::class, 'checkout']);
+
+        // Add/Edit Delivery Address
+        Route::match(['get', 'post'], 'add-edit-delivery-address/{id?}', [FrontProductsController::class, 'addEditDeliveryAddress']);
+
+        //Delete Delivery Address
+        Route::get('/delete-delivery-address/{id}', [FrontProductsController::class, 'deleteDeliveryAddress']);
+
+        //Thanks page Route
+        Route::get('/thanks', [FrontProductsController::class, 'thanks']);
+        
+        //Paypal page Route
+        Route::get('/paypal', [PaypalController::class, 'paypal']);
+
+        //paypal Success
+        Route::get('/paypal/success', [PaypalController::class, 'success']);
+
+        //paypal Fail
+        Route::get('/paypal/fail', [PaypalController::class, 'fail']);
+
+        //paypal IPN
+        Route::post('/paypal/ipn', [PaypalController::class, 'ipn']);
+
+        //Update Wishlist 
+        Route::post('/update-wishlist', [FrontProductsController::class, 'updateWishlist']);
+
+        //User Wishlist product 
+        Route::get('/wishlist', [FrontProductsController::class, 'wishlist']);
+        
+        #Delete Wishlist Item
+        Route::post('/delete-wishlist-item', [FrontProductsController::class, 'deleteWishlistItem']);
     });
 
 

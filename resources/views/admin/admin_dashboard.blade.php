@@ -20,9 +20,24 @@
         </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
-
     <!-- Main content -->
     <section class="content">
+        @if (Session::has('success_message'))
+        <div class="alert alert-success alert-dismissible fade mt-2 show" role="alert">
+            {{ Session::get('success_message') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span arial-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
+        @if (Session::has('error_message'))
+        <div class="alert alert-danger alert-dismissible fade mt-2 show" role="alert">
+            {{ Session::get('error_message') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span arial-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">

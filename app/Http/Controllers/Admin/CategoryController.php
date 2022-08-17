@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Section;
 use App\Models\Category;
+use App\Models\AdminsRole;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Session;
 
@@ -16,7 +18,24 @@ class CategoryController extends Controller
         $categories = Category::with('section', 'parentcategory')->get();
         // $categories = json_decode(json_encode($categories));
         // echo "<pre>"; print_r($categories); die;
-        return view('admin.categories.categories')->with(compact('categories'));
+
+        // Set Admin/Subadmin for Categories
+        $categoryModuleCount = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,
+        'module'=>'categories'])->count();
+        if (Auth::guard('admin')->user()->type == "superadmin") {
+            $categoryModule['view_access'] = 1;
+            $categoryModule['edit_access'] = 1;
+            $categoryModule['full_access'] = 1;
+        }else if($categoryModuleCount == 0 ){
+            $message = "The feature is restricted for you!";
+            Session::flash('error_message',$message);
+            return redirect('admin/dashboard');
+        }else{
+            $categoryModule = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,
+        'module'=>'categories'])->first()->toArray();
+        }
+
+        return view('admin.categories.categories')->with(compact('categories','categoryModule'));
     }
 
     public function updateCategoryStatus(Request $request )
@@ -133,8 +152,8 @@ class CategoryController extends Controller
             $data = $request->all();
             // echo "<pre>"; print_r($data); die;
             $getCategories = Category::with('subcategories')->where(['section_id' => $data['section_id'],
-             'parent_id' => 0, 'status'=>1])->get();
-             $getCategories = json_decode(json_encode($getCategories), true);
+            'parent_id' => 0, 'status'=>1])->get();
+            $getCategories = json_decode(json_encode($getCategories), true);
             //  echo "<pre>"; print_r($getCategories);
             return view('admin.categories.append_categories_level')->with(compact('getCategories'));
         }

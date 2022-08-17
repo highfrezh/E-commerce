@@ -1,4 +1,5 @@
 <?php use App\Models\Product; ?>
+<?php use App\Models\Wishlist; ?>
 @extends('layouts.front_layout.front_layout')
 @section('content')
 <div class="span9">
@@ -62,6 +63,28 @@
             <small>- {{ $productDetails['brand']['name'] }}</small>
             <hr class="soft">
             <small>{{ $total_stock }} items in stock</small>
+            <div>&nbsp;</div>
+            <div>
+                <?php
+                $star = 1;
+                while($star <= $avgStarRating){ ?>
+                <span style="color: gold;">&#9733;</span>
+                <?php $star++; } ?>({{ $avgRating }})
+            </div>
+
+            @if(count($groupProducts)>0)
+            <div>
+                <div><strong>More Colors</strong></div>
+                <div style="margin-top: 5px">
+                    @foreach ($groupProducts as $product)
+                    <a href="{{ url('product/'.$product['id']) }}"><img style="width: 50px;"
+                            src="{{ asset('images/product_images/small/'.$product['main_image']) }}"></a>
+                    @endforeach
+                </div>
+            </div>
+            <br>
+            @endif
+
             <form action="{{ url('add-to-cart') }}" method="post" class="form-horizontal qtyFrm">@csrf
                 <input type="hidden" name="product_id" value="{{ $productDetails['id'] }}">
                 <div class="control-group">
@@ -74,6 +97,18 @@
                         ${{ $productDetails['product_price'] }}
                         @endif
                     </h4>
+
+                    <span class="mainCurrencyPrice">
+                        @foreach ($getCurrencies as $currency)
+                        {{ $currency['currency_code'] }}
+                        @php
+                        echo round($productDetails['product_price'] * $currency['exchange_rate'],2)
+                        @endphp
+                        <br>
+                        @endforeach
+                    </span>
+                    <br>
+
                     <select name="size" id="getPrice" product-id="{{ $productDetails['id'] }}" class="span2 pull-left"
                         required>
                         <option value="" selected>Select Size</option>
@@ -82,8 +117,25 @@
                         @endforeach
                     </select>
                     <input type="number" name="quantity" class="span1" placeholder="Qty." required>
-                    <button type="submit" class="btn btn-large btn-primary pull-right"> Add to cart <i
+                    <br><br>
+                    <button type="submit" class="btn btn-large btn-primary btn-space"> Add to cart <i
                             class=" icon-shopping-cart"></i></button>
+                    &nbsp;&nbsp;
+
+                    @php
+                    $countWishlist = 0;
+                    @endphp
+                    @if(Auth::check())
+                    @php
+                    $countWishlist = Wishlist::countWishlist($productDetails['id']);
+                    @endphp
+                    <button type="button" class="btn btn-large btn-primary btn-space updateWishlist" title="wishlist"
+                        data-productid="{{ $productDetails['id'] }}">Wishlist <i
+                            class=" @if($countWishlist > 0) icon-heart @else icon-heart-empty @endif"></i></button>
+                    @else
+                    <button type="button" class="btn btn-large btn-primary btn-space userLogin"
+                        title="wishlist">Wishlist <i class=" icon-heart-empty"></i></button>
+                    @endif
                 </div>
             </form>
         </div>
@@ -104,6 +156,10 @@
         <ul id="productDetail" class="nav nav-tabs">
             <li class="active"><a href="#home" data-toggle="tab">Product Details</a></li>
             <li><a href="#profile" data-toggle="tab">Related Products</a></li>
+            @if(isset($productDetails['product_video']) && !empty($productDetails['product_video']))
+            <li><a href="#video" data-toggle="tab">Product Video</a></li>
+            @endif
+            <li><a href="#review" data-toggle="tab">Review & Rating</a></li>
         </ul>
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade active in" id="home">
@@ -259,6 +315,67 @@
                     </div>
                 </div>
                 <br class="clr">
+            </div>
+            @if(isset($productDetails['product_video']) && !empty($productDetails['product_video']))
+            <div class="tab-pane fade" id="video">
+                <video controls width="500" height="250">
+                    <source src="{{ url('videos/product_videos/'.$productDetails['product_video']) }}">
+                </video>
+            </div>
+            @endif
+            <div class="tab-panel fade" id="review">
+                <div class="row">
+                    <div class="span4">
+                        <h4>Write a Review</h4>
+                        <form action="{{ url('/add-rating') }}" method="post" name="ratingForm" class="form-horizontal"
+                            id="ratingForm">@csrf
+                            <input type="hidden" name="product_id" value="{{ $productDetails['id'] }}">
+                            <div class="rate">
+                                <input type="radio" id="star5" name="rate" value="5" />
+                                <label for="star5" title="text">5 stars</label>
+                                <input type="radio" id="star4" name="rate" value="4" />
+                                <label for="star4" title="text">4 stars</label>
+                                <input type="radio" id="star3" name="rate" value="3" />
+                                <label for="star3" title="text">3 stars</label>
+                                <input type="radio" id="star2" name="rate" value="2" />
+                                <label for="star2" title="text">2 stars</label>
+                                <input type="radio" id="star1" name="rate" value="1" />
+                                <label for="star1" title="text">1 star</label>
+                            </div>
+                            <div class="control-group"></div>
+                            <div class="form-group">
+                                <label>Your Review</label>
+                                <textarea name="review" id="review" style="width: 300px; height: 50px;"
+                                    required></textarea>
+                            </div>
+                            <div>&nbsp;</div>
+                            <div class="form-group">
+                                <input type="submit" class="btn" value="Submit">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="span4">
+                        <h4>Users Reviews</h4>
+                        @if (count($ratings)>0)
+                        @foreach ($ratings as $rating)
+                        <div>
+                            <?php
+                                $count = 1;
+                                while($count <= $rating['rating']){ ?>
+                            <span style="color: gold;">&#9733;</span>
+                            <?php $count++; } ?>
+                            <br>
+                            <span>{{ $rating['review'] }}</span><br>
+                            <span>By {{ $rating['user']['name'] }}</span><br>
+                            <span>{{ date("d-m-Y H:i:s", strtotime($rating['created_at'])); }}</span>
+                            <hr>
+                        </div>
+                        @endforeach
+                        @else
+                        <p><b>Reviews are not available this product!</b></p>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -49,8 +49,12 @@
                                         <th>Parent Category</th>
                                         <th>Section</th>
                                         <th>Url</th>
+                                        @if($categoryModule['edit_access'] ==1 || $categoryModule['full_access'] ==1)
                                         <th>Status</th>
+                                        @endif
+                                        @if($categoryModule['edit_access'] ==1 || $categoryModule['full_access'] ==1)
                                         <th>Actions</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -67,6 +71,8 @@
                                         <td>{{ $category->section->name }}</td>
                                         <td>{{ $category->url }}</td>
                                         <td>
+                                            @if($categoryModule['edit_access'] ==1 || $categoryModule['full_access']
+                                            ==1)
                                             @if($category->status === 1)
                                             <a class="updateCategoryStatus" id="category-{{ $category->id }}"
                                                 category_id="{{ $category->id }}" href="javascript:void(0)"><i
@@ -78,14 +84,20 @@
                                                     status="Inactive" aria-hidden="true"
                                                     class="fas fa-toggle-off fa-lg"></i></a>
                                             @endif
+                                            @endif
                                         </td>
                                         <td>
+                                            @if($categoryModule['edit_access'] ==1 || $categoryModule['full_access']
+                                            ==1)
                                             <a href="{{ url('admin/add-edit-category/'.$category->id) }}"><i
                                                     class="fas fa-edit"></i></a>
+                                            @endif
                                             &nbsp;&nbsp;
+                                            @if($categoryModule['full_access'] ==1)
                                             <a class="confirmDelete" name="Category"
                                                 href="{{ url('admin/delete-category/'.$category->id) }}"><i
                                                     class="fas fa-trash"></i></a>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach

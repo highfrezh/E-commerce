@@ -147,10 +147,11 @@ $(document).ready(function(){
             data:{size:size,product_id:product_id},
             type:'post',
             success:function(resp){
+                $(".mainCurrencyPrice").hide();
             if (resp['discount'] > 0) {
-                $(".getAttrPrice").html("<del>$" + resp['product_price']+ "</del> $" + resp['final_price']);
+                $(".getAttrPrice").html("<del>$" + resp['product_price']+ "</del> $" + resp['final_price'] + "<br>" + resp['currency'] );
             }else{
-                $(".getAttrPrice").html("$" + resp['product_price']);
+                $(".getAttrPrice").html("$" + resp['product_price'] + resp['currency']);
             }
             },error:function(){
                 alert("Error");
@@ -181,10 +182,10 @@ $(document).ready(function(){
                 url:'/update-cart-item-qty',
                 type:'post',
                 success:function(resp){
-                    alert(resp.status);
                     if (resp.status==false) {
                         alert("Product Stock is not Available");
                     }
+                    $(".totalCartItems").html(resp.totalCartItems);
                     $("#AppendCartItems").html(resp.view);
                 },
                 error:function(){
@@ -196,13 +197,14 @@ $(document).ready(function(){
     //Delete Cart Items dynamically
     $(document).on('click','.btnItemDelete', function(){
             var cartid = $(this).data('cartid');
-            var result = confirm("Want to deletethis cart item");
+            var result = confirm("Want to delete this cart item");
             if (result) {
                 $.ajax({
                     data:{"cartid":cartid},
                     url:'/delete-cart-item',
                     type:'post',
                     success:function(resp){
+                        $(".totalCartItems").html(resp.totalCartItems);
                         $("#AppendCartItems").html(resp.view);
                     },
                     error:function(){
@@ -340,4 +342,192 @@ $(document).ready(function(){
                 }
             })
         });
+
+        //Apply Coupon 
+        $("#ApplyCoupon").submit(function(){
+            var user = $(this).attr("user");
+            if(user != 1){
+                alert("Please login to apply Coupon");
+                return false;
+            }
+            var code = $("#code").val();
+            $.ajax({
+                type: 'post',
+                data: {code:code},
+                url:'/apply-coupon',
+                success:function(resp){
+                    if (resp.message != "") {
+                        alert(resp.message);
+                    } 
+                    $(".totalCartItems").html(resp.totalCartItems);
+                    $("#AppendCartItems").html(resp.view); 
+                    if(resp.couponAmount >=0){
+                        $(".couponAmount").text("$"+resp.couponAmount);
+                    }else{
+                        $(".couponAmount").text("$0");
+                    }
+                    if(resp.grand_total >=0){
+                        $(".grand_total").text("$"+resp.grand_total);
+                    }
+                },
+                error:function(){
+                    alert("Error");
+                }
+            })
+
+        });
+
+        //Comfirm delete delivery address
+        $(document).on('click','.addressDelete', function(){
+            var result = confirm("Want to delete this Address?");
+            if(!result){
+                return false;
+            }
+        });
+
+        //Calculate Shipping Charges and Update Grand total
+        $("input[name=address_id]").bind('change',function(){
+            var shipping_charges = $(this).attr("shipping_charges");
+            var total_price = $(this).attr("total_price");
+            var coupon_amount = $(this).attr("coupon_amount");
+            if(coupon_amount == ""){
+                coupon_amount = 0; 
+            }
+            $(".shipping_charges").html("$"+shipping_charges);
+            var grand_total = parseInt(total_price) + parseInt(shipping_charges) - parseInt(coupon_amount);
+            $(".grand_total").html("$"+ grand_total);
+        });
+
+        $(".userLogin").click(function(){
+            alert('Login to add products in the wishlist');
+        });
+
+        //Update wishlist
+        $(".updateWishlist").click(function(){
+            var product_id = $(this).data('productid');
+            $.ajax({
+                type: "post",
+                url:"/update-wishlist",
+                data:{"product_id":product_id},
+                success:function(resp){
+                    if(resp.action == 'add'){
+                        $('button[data-productid='+product_id+']').html('Wishlist <i class="icon-heart"></i>');
+                        alert('Product added in your wishlist');
+                    }else if(resp.action == 'remove'){
+                        $('button[data-productid='+product_id+']').html('Wishlist <i class="icon-heart-empty"></i>');
+                        alert('Product removed from your wishlist');
+                    }
+                },error:function(){
+                    alert("Error");
+                }
+            });
+        });
+
+        //Delete Wishlist Item
+        $(document).on('click','.wishlistItemDelete',function(){
+            var wishlistid = $(this).data('wishlistid');
+            $.ajax({
+                type: 'post',
+                url:'/delete-wishlist-item',
+                data:{'wishlistid':wishlistid},
+                success:function(resp){
+                    $(".totalWishlistItems").html(resp.totalWishlistItems);
+                    $("#AppendWishlistItems").html(resp.view);
+                },
+                error:function(){
+                    alert("Error");
+                }
+            });
+        });
+
+        //Concel order Confirm
+        $(document).on('click','.btnCancelOrder',function(){
+            var reason = $("#cancelReason").val();
+            if(reason==""){
+                alert("Please select Reason for cancelling the Order");
+                return false;
+            }
+            var result = confirm("Want to cancel this Order?");
+            if(!result){
+                return false;
+            }
+        }) ; 
+
+        //Return order Confirm
+        $(document).on('click','.btnReturnOrder',function(){
+            var return_exchange = $("#returnExchange").val();
+            if(return_exchange == ""){
+                alert("Please select if you want to return or exchange?");
+                return false;
+            }
+            var product = $("#returnProduct").val();
+            if(product==""){
+                alert("Please select Product to return");
+                return false;
+            }
+            var reason = $("#returnReason").val();
+            if(reason==""){
+                alert("Please select Reason for returning the Order");
+                return false;
+            }
+            var result = confirm("Want to return this Order?");
+            if(!result){
+                return false;
+            }
+        }) ; 
+
+        //Show and hide required product size
+        $(".productSizes").hide();
+        $("#returnExchange").change(function(){
+            var return_exchange = $(this).val();
+            if (return_exchange == "Exchange") {
+                $(".productSizes").show();
+            }else{
+                $(".productSizes").hide();
+            }
+        });
+
+        //Getting other product size on change
+        $("#returnProduct").change(function(){
+            var product_info = $(this).val();
+            var return_exchange = $("#returnExchange").val();
+            if (return_exchange == "Exchange") {
+                $.ajax({
+                    type: 'post',
+                    url: '/get-product-sizes',
+                    data:{product_info:product_info},
+                    success:function(resp){
+                        $("#productSizes").html(resp);
+                    },
+                    error:function(){
+                        alert("Error");
+                    }
+                })
+            }
+        });        
 });
+
+//Add newsletter subscriber
+        function addSubscriber() {
+            var subscriber_email = $("#subscriber_email").val();
+            var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if (regex.test(subscriber_email) == false) {
+                alert('Pleasen enter valid Email!');
+                return false;                
+            }
+            $.ajax({
+                type: 'post',
+                url: '/add-subscriber-email',
+                data:{subscriber_email:subscriber_email},
+                success:function(resp){
+                    if(resp == "exists"){
+                        alert("Subscriber email already exists!");
+                    }else if(resp == "inserted"){
+                        alert("Thanks for Subscribing!");
+                    }
+                },
+                error:function(){
+                    alert("Error");
+                }
+            });
+        }

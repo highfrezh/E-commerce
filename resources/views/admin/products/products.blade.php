@@ -51,8 +51,14 @@
                                         <th>Product Image</th>
                                         <th>Category</th>
                                         <th>Section</th>
+                                        @if($productModule['edit_access'] ==1 || $productModule['full_access']
+                                        ==1)
                                         <th>Status</th>
+                                        @endif
+                                        @if($productModule['edit_access'] ==1 || $productModule['full_access']
+                                        ==1)
                                         <th>Actions</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,6 +81,8 @@
                                         </td>
                                         <td>{{ $product->category->category_name }}</td>
                                         <td>{{ $product->section->name }}</td>
+                                        @if($productModule['edit_access'] ==1 || $productModule['full_access']
+                                        ==1)
                                         <td>
                                             @if($product->status === 1)
                                             <a class="updateProductStatus" id="product-{{ $product->id }}"
@@ -88,7 +96,10 @@
                                                     class="fas fa-toggle-off fa-lg"></i></a>
                                             @endif
                                         </td>
+                                        @endif
                                         <td>
+                                            @if($productModule['edit_access'] ==1 || $productModule['full_access']
+                                            ==1)
                                             <a title="Add/Edit Attribute"
                                                 href="{{ url('admin/add-attributes/'.$product->id) }}"><i
                                                     class="fas fa-plus"></i></a>
@@ -99,10 +110,13 @@
                                             &nbsp;
                                             <a title="Add Image" href="{{ url('admin/add-images/'.$product->id) }}"><i
                                                     class="fas fa-plus-circle"></i></a>
+                                            @endif
                                             &nbsp;
+                                            @if($productModule['full_access']==1)
                                             <a title="Delete Product" class="confirmDelete" name="product"
                                                 href="{{ url('admin/delete-product/'.$product->id) }}"><i
                                                     class="fas fa-trash"></i></a>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach

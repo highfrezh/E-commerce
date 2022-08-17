@@ -3,9 +3,27 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Stack Developers online Shopping cart</title>
+    @if (!empty($meta_title))
+    <title>{{ $meta_title }}</title>
+    @else
+    <title>Laravel E-commerce Website from frezh Developers YouTube Channel</title>
+    @endif
+
+    @if (!empty($meta_description))
+    <meta name="description" content="{{ $meta_description }}">
+    @else
+    <meta name="description"
+        content="This is the test E-commerce Website that we made to help the beginners in laravel. So join and learn Laravel quickly.">
+    @endif
+
+    @if (!empty($meta_keywords))
+    <meta name="keywords" content="{{ $meta_keywords }}">
+    @else
+    <meta name="keywords"
+        content="developers, laravel course, laravel video tutorial, subcribe frezh developers, download laravel website code">
+    @endif
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 

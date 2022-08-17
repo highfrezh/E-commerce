@@ -20,6 +20,9 @@ class IndexController extends Controller
         $newProducts = Product::orderBy('id','Desc')->where('status',1)->limit(6)->get()->toArray();
         // dd($newProducts); die;
         $page_name = "index";
-        return view('front.index')->with(compact('page_name','featuredItemsChunk','featuredItemsCount','newProducts'));
+        $meta_title = "E-commerce Website by Highfrezh";
+        $meta_description = "Subscribe Frezh Developers to learn Laravel";
+        $meta_keywords = "developers, laravel course, laravel video tutorial, subcribe frezh developers, download laravel website code";
+        return view('front.index')->with(compact('page_name','featuredItemsChunk','featuredItemsCount','newProducts','meta_title','meta_description','meta_keywords'));
     }
 }

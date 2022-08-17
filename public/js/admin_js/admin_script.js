@@ -178,7 +178,7 @@ $(document).ready(function(){
 
     // update Image status
     $(".updateImageStatus").click(function(){
-         var status = $(this).children('i').attr("status");
+        var status = $(this).children('i').attr("status");
         var image_id = $(this).attr("image_id");
         $.ajax({
             type: 'post',
@@ -210,6 +210,196 @@ $(document).ready(function(){
                     $("#banner-" + banner_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
                 }else if(resp['status'] == 1){
                     $("#banner-" + banner_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
+                }
+            },
+            error:function(){
+                alert('Error..')
+            }
+        })
+    });
+
+    // update Coupon status
+    $(".updateCouponStatus").click(function(){
+        var status = $(this).children('i').attr("status");
+        var coupon_id = $(this).attr("coupon_id");
+        $.ajax({
+            type: 'post',
+            url:'/admin/update-coupons-status',
+            data:{status:status,coupon_id:coupon_id},
+            success:function(resp){
+                if(resp['status'] == 0){
+                    $("#coupon-" + coupon_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
+                }else if(resp['status'] == 1){
+                    $("#coupon-" + coupon_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
+                }
+            },
+            error:function(){
+                alert('Error..')
+            }
+        })
+    });
+
+    // Show/Hide Coupon Field for manual/automatic 
+    $("#ManualCoupon").click(function() {
+        $("#couponField").show();
+    });
+
+    $("#AutomaticCoupon").click(function() {
+        $("#couponField").hide();
+    });
+
+    //Show Courier Name and Tracking number  in case of shipped Order Status
+    $("#courier_name").hide();
+    $("#tracking_number").hide();
+    $("#order_status").on("change",function(){
+        if (this.value == "Shipped") {
+            $("#courier_name").show();
+            $("#tracking_number").show();
+        }else{
+            $("#courier_name").hide();
+            $("#tracking_number").hide();
+        }
+    });
+
+     // update Shippings status
+    $(document).on("click",".updateShippingStatus", function(){
+        var status = $(this).children('i').attr("status");
+        var shipping_id = $(this).attr("shipping_id");
+        $.ajax({
+            type: 'post',
+            url:'/admin/update-shipping-status',
+            data:{status:status,shipping_id:shipping_id},
+            success:function(resp){
+                if(resp['status'] == 0){
+                    $("#shipping-" + shipping_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
+                }else if(resp['status'] == 1){
+                    $("#shipping-" + shipping_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
+                }
+            },
+            error:function(){
+                alert('Error..')
+            }
+        })
+    });
+
+       // update Users status
+    $(".updateUserStatus").click(function(){
+        var status = $(this).children('i').attr("status");
+        var user_id = $(this).attr("user_id");
+        $.ajax({
+            type: 'post',
+            url:'/admin/update-user-status',
+            data:{status:status,user_id:user_id},
+            success:function(resp){
+                if(resp['status'] == 0){
+                    $("#user-" + user_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
+                }else if(resp['status'] == 1){
+                    $("#user-" + user_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
+                }
+            },
+            error:function(){
+                alert('Error..')
+            }
+        })
+    });
+
+       // update CMS pages status
+    $(".updateCmsPageStatus").click(function(){
+        var status = $(this).children('i').attr("status");
+        var page_id = $(this).attr("page_id");
+        $.ajax({
+            type: 'post',
+            url:'/admin/update-cms-pages-status',
+            data:{status:status,page_id:page_id},
+            success:function(resp){
+                if(resp['status'] == 0){
+                    $("#page-" + page_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
+                }else if(resp['status'] == 1){
+                    $("#page-" + page_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
+                }
+            },
+            error:function(){
+                alert('Error..')
+            }
+        })
+    });
+
+       // update admin / subadmin status
+    $(".updateAdminStatus").click(function(){
+        var status = $(this).children('i').attr("status");
+        var admin_id = $(this).attr("admin_id");
+        $.ajax({
+            type: 'post',
+            url:'/admin/update-admin-status',
+            data:{status:status,admin_id:admin_id},
+            success:function(resp){
+                if(resp['status'] == 0){
+                    $("#admin-" + admin_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
+                }else if(resp['status'] == 1){
+                    $("#admin-" + admin_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
+                }
+            },
+            error:function(){
+                alert('Error..')
+            }
+        })
+    });
+
+       // update currency status
+    $(".updateCurrencyStatus").click(function(){
+        var status = $(this).children('i').attr("status");
+        var currency_id = $(this).attr("currency_id");
+        $.ajax({
+            type: 'post',
+            url:'/admin/update-currency-status',
+            data:{status:status,currency_id:currency_id},
+            success:function(resp){
+                if(resp['status'] == 0){
+                    $("#currency-" + currency_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
+                }else if(resp['status'] == 1){
+                    $("#currency-" + currency_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
+                }
+            },
+            error:function(){
+                alert('Error..')
+            }
+        })
+    });
+
+       // update currency status
+    $(".updateRatingStatus").click(function(){
+        var status = $(this).children('i').attr("status");
+        var rating_id = $(this).attr("rating_id");
+        $.ajax({
+            type: 'post',
+            url:'/admin/update-rating-status',
+            data:{status:status,rating_id:rating_id},
+            success:function(resp){
+                if(resp['status'] == 0){
+                    $("#rating-" + rating_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
+                }else if(resp['status'] == 1){
+                    $("#rating-" + rating_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
+                }
+            },
+            error:function(){
+                alert('Error..')
+            }
+        })
+    });
+
+    //Update Subscriber status
+    $(".updateSubscriberStatus").click(function(){
+        var status = $(this).children('i').attr("status");
+        var subscriber_id = $(this).attr("subscriber_id");
+        $.ajax({
+            type: 'post',
+            url:'/admin/update-subscriber-status',
+            data:{status:status,subscriber_id:subscriber_id},
+            success:function(resp){
+                if(resp['status'] == 0){
+                    $("#subscriber-" + subscriber_id).html("<i status='Inactive' aria-hidden='true' class='fas fa-toggle-off fa-lg'></i>");
+                }else if(resp['status'] == 1){
+                    $("#subscriber-" + subscriber_id).html("<i status='Active' aria-hidden='true' class='fas fa-toggle-on fa-lg'></i>");
                 }
             },
             error:function(){

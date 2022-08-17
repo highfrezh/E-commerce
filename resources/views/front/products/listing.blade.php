@@ -14,6 +14,7 @@
     <p>
         {{ $categoryDetails['catDetails']['description'] }}
     </p>
+    @if(!isset($_REQUEST['search']))
     <hr class="soft">
     <form name="sortProducts" id="sortProducts" class="form-horizontal span6">
         <input type="hidden" id="url" value="{{ $url }}">
@@ -34,12 +35,14 @@
             </select>
         </div>
     </form>
+    @endif
 
     <br class="clr">
     <div class="tab-content filter_products">
         @include('front.products.ajax_products_listing')
     </div>
     <a href="compare.html" class="btn btn-large pull-right">compare Product</a>
+    @if(!isset($_REQUEST['search']))
     <div class="pagination">
         @if(isset($_GET['sort']) && !empty($_GET['sort']))
         {{$categoryProducts->appends(['sort' => $_GET['sort']])->links()}}
@@ -47,6 +50,8 @@
         {{$categoryProducts->links()}}
         @endif
     </div>
+    @endif
+
     <br class="clr">
 </div>
 @endsection

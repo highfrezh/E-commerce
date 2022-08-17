@@ -4,8 +4,10 @@ $sections = Section::sections();
 // echo "<pre>"; print_r($sections); die;
 ?>
 <div id="sidebar" class="span3">
-    <div class="well well-small"><a id="myCart" href="product_summary.html"><img
-                src="{{ asset('images/front_images/ico-cart.png') }}" alt="cart">3 Items in your cart</a></div>
+    <div class="well well-small"><a id="myCart" href="{{ url('/cart') }}"><img
+                src="{{ asset('images/front_images/ico-cart.png') }}" alt="cart">
+            <span class="totalCartItems">{{ totalCartItems() }} </span> Items in your
+            cart</a></div>
     <ul id="sideManu" class="nav nav-tabs nav-stacked">
         @foreach ($sections as $section)
         @if(count($section['categories']) > 0)
@@ -27,7 +29,7 @@ $sections = Section::sections();
         @endforeach
     </ul>
     <br>
-    @if (isset($page_name) && $page_name == "listing")
+    @if (isset($page_name) && $page_name == "listing" && !isset($_REQUEST['search']))
     <div class="well well-small">
         <h5>Fabric</h5>
         @foreach ($fabricArray as $fabric)

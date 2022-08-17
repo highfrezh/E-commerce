@@ -40,7 +40,7 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'admin' => [                    //Added bby me for guard
+        'admin' => [                    //Added by me for guard
             'driver' => 'session',
             'provider' => 'admins',
         ],

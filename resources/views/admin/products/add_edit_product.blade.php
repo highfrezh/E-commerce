@@ -195,8 +195,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="decription">Product Description</label>
-                                    <textarea class="form-control" name="description" id="description" rows="3"
-                                        placeholder="Enter ...">@if(!empty($productdata['description'])){{ $productdata['description'] }}
+                                    <textarea placeholder="Enter text" class="form-control" name="description"
+                                        id="description" rows="3" placeholder="Enter ...">@if(!empty($productdata['description'])){{ $productdata['description'] }}
                                         @else {{ old('description') }}
                                         @endif
                                     </textarea>
@@ -206,12 +206,21 @@
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label for="wash_care">Wash Care</label>
-                                    <textarea class="form-control" name="wash_care" id="wash_care" rows="3"
-                                        placeholder="Enter ...">@if(!empty($productdata['wash_care'])){{ $productdata['wash_care'] }}
+                                    <textarea placeholder="Enter text" class="form-control" name="wash_care"
+                                        id="wash_care" rows="3" placeholder="Enter ...">@if(!empty($productdata['wash_care'])){{ $productdata['wash_care'] }}
                                         @else {{ old('wash_care') }}
                                         @endif
                                     </textarea>
                                 </div>
+                                <div class="form-group">
+                                    <label for="group_code">Group Code</label>
+                                    <input type="text" name="group_code" class="form-control" id="group_code"
+                                        placeholder="Group Code" @if(!empty($productdata['group_code']))
+                                        value="{{ $productdata['group_code'] }}" @else value="{{ old('group_code') }}"
+                                        @endif>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label>Select Fabric</label>
                                     <select name="fabric" id="fabric" class="form-control select2" style="width: 100%;">
@@ -222,8 +231,6 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label>Select Occasion</label>
                                     <select name="occasion" id="occasion" class="form-control select2"
@@ -273,16 +280,16 @@
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label for="meta_title">Meta Title</label>
-                                    <textarea class="form-control" name="meta_title" id="meta_title" rows="3"
-                                        placeholder="Enter ...">@if(!empty($productdata['meta_title'])){{ $productdata['meta_title'] }}
+                                    <textarea placeholder="Enter text" class="form-control" name="meta_title"
+                                        id="meta_title" rows="3" placeholder="Enter ...">@if(!empty($productdata['meta_title'])){{ $productdata['meta_title'] }}
                                         @else {{ old('meta_title') }}
                                         @endif
                                     </textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="meta_keywords">Meta Keywords</label>
-                                    <textarea class="form-control" id="meta_keywords" name="meta_keywords" rows="3"
-                                        placeholder="Enter ...">@if(!empty($productdata['meta_keywords'])){{ $productdata['meta_keywords'] }}
+                                    <textarea placeholder="Enter text" class="form-control" id="meta_keywords"
+                                        name="meta_keywords" rows="3" placeholder="Enter ...">@if(!empty($productdata['meta_keywords'])){{ $productdata['meta_keywords'] }}
                                         @else {{ old('meta_keywords') }}
                                         @endif
                                     </textarea>
@@ -291,8 +298,8 @@
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label for="meta_description">Meta Description</label>
-                                    <textarea class="form-control" name="meta_description" id="meta_description"
-                                        rows="3" placeholder="Enter ...">@if(!empty($productdata['meta_description'])){{ $productdata['meta_description'] }}
+                                    <textarea placeholder="Enter text" class="form-control" name="meta_description"
+                                        id="meta_description" rows="3" placeholder="Enter ...">@if(!empty($productdata['meta_description'])){{ $productdata['meta_description'] }}
                                         @else{{ old('meta_description') }}
                                         @endif
                                     </textarea>

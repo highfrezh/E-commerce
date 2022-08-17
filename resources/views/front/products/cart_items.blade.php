@@ -12,6 +12,9 @@
     </thead>
     <tbody>
         <?php $total_price = 0; ?>
+        @if (empty($userCartItems))
+        {{ Session::forget('couponAmount') }}
+        @endif
         @foreach($userCartItems as $item)
         <?php $attrPrice = Product::getDiscountedAttrPrice($item['product_id'], $item['size']);?>
         <tr>
@@ -37,7 +40,7 @@
                 </div>
             </td>
             <td>${{ $attrPrice['product_price'] }}</td>
-            <td>${{ $attrPrice['discount'] }}</td>
+            <td>${{ $attrPrice['discount'] * $item['quantity'] }}</td>
             <td>$ {{ $attrPrice['final_price'] * $item['quantity'] }}</td>
         </tr>
         <?php $total_price = $total_price + ($attrPrice['final_price'] * $item['quantity']); ?>
@@ -47,13 +50,27 @@
             <td>${{ $total_price }}</td>
         </tr>
         <tr>
-            <td colspan="6" style="text-align:right">Voucher Discount: </td>
-            <td> $0.00</td>
+            <td colspan="6" style="text-align:right">Coupon Discount: </td>
+            <td class="couponAmount">
+                @if(Session::has('couponAmount'))
+                ${{ Session::get('couponAmount') }}
+                @else
+                $0.00
+                @endif
+            </td>
         </tr>
         <tr>
-            <td colspan="6" style="text-align:right"><strong>GRAND TOTAL (${{ $total_price }} - $0.00) =</strong>
+            <td colspan="6" style="text-align:right"><strong>GRAND TOTAL (${{ $total_price }} - <span
+                        class="couponAmount">
+                        @if(Session::has('couponAmount'))
+                        ${{ Session::get('couponAmount') }}
+                        @else
+                        $0.00
+                        @endif
+                    </span>) =</strong>
             </td>
-            <td class="label label-important" style="display:block"> <strong>${{ $total_price }}</strong></td>
+            <td class="label label-important" style="display:block"> <strong class="grand_total">${{
+                    $total_price}}</strong></td>
         </tr>
     </tbody>
 </table>

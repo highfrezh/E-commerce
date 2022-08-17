@@ -9,8 +9,9 @@
             </div>
             <div class="span3">
                 <h5>INFORMATION</h5>
+                <a href="{{ url('about-us') }}">ABOUT</a>
                 <a href="contact.html">CONTACT</a>
-                <a href="tac.html">TERMS AND CONDITIONS</a>
+                <a href="{{ url('terms-condition') }}">TERMS AND CONDITIONS</a>
                 <a href="faq.html">FAQ</a>
             </div>
             <div class="span3">

@@ -6,10 +6,12 @@ use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Section;
 use App\Models\Category;
+use App\Models\AdminsRole;
 use Illuminate\Http\Request;
 use App\Models\ProductsImage;
 use App\Models\ProductsAttribute;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Session;
 
@@ -20,7 +22,24 @@ class ProductsController extends Controller
         $products = Product::with(['category','section'])->get();
         // $products = json_decode(json_encode($products));
         // echo "<pre>"; print_r($products);die;
-        return view('admin.products.products')->with(compact('products'));
+
+        // Set Admin/Subadmin for Products
+        $productModuleCount = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,
+        'module'=>'products'])->count();
+        if (Auth::guard('admin')->user()->type == "superadmin") {
+            $productModule['view_access'] = 1;
+            $productModule['edit_access'] = 1;
+            $productModule['full_access'] = 1;
+        }else if($productModuleCount == 0 ){
+            $message = "The feature is restricted for you!";
+            Session::flash('error_message',$message);
+            return redirect('admin/dashboard');
+        }else{
+            $productModule = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,
+        'module'=>'products'])->first()->toArray();
+        }
+
+        return view('admin.products.products')->with(compact('products','productModule'));
     }
 
     public function updateProductStatus(Request $request )
@@ -141,6 +160,7 @@ class ProductsController extends Controller
             $product->product_name = $data['product_name'];
             $product->product_code = $data['product_code'];
             $product->product_color = $data['product_color'];
+            $product->group_code = $data['group_code'];
             $product->product_price = $data['product_price'];
             $product->product_discount = $data['product_discount'];
             $product->product_weight = $data['product_weight'];

@@ -20,6 +20,7 @@ class CreateProductsTable extends Migration
             $table->string('product_name');
             $table->string('product_code');
             $table->string('product_color');
+            $table->string('group_code');
             $table->float('product_price');
             $table->float('product_discount');
             $table->float('product_weight');

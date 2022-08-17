@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin;
+use App\Models\AdminsRole;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +45,7 @@ class AdminController extends Controller
 
             $this->validate($request, $rules,$customMessages);
 
-            if (Auth::guard('admin')->attempt(['email' => $data['email'], 'password' => $data['password']])) {
+            if (Auth::guard('admin')->attempt(['email' => $data['email'], 'password' => $data['password'],'status'=>1])) {
                 return redirect('admin/dashboard');
             } else {
                 Session::flash('error_message', 'Invalid Email or Password');
@@ -141,5 +142,159 @@ class AdminController extends Controller
 
         }
         return view('admin.update_admin_details');
+    }
+
+    public function adminsSubadmins()
+    {
+        if(Auth::guard('admin')->user()->type == "subadmin"){
+            return redirect('admin/dashboard');
+        }
+        Session::put('page','admins_subadmins');
+        $admins_subadmins = Admin::get();
+        return view('admin.admins_subadmins.admins_subadmins')->with(compact('admins_subadmins'));
+    }
+
+    public function updateAdminStatus(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = $request->all();
+            // echo "<pre>"; print_r($data); die;
+            if ($data['status'] == "Active") {
+                $status = 0;
+            }else{
+                $status = 1;
+            }
+            Admin::where('id', $data['admin_id'])->update(['status' => $status]);
+            return response()->json(['status' => $status, 'admin_id' => $data['admin_id']]);
+        }
+    }
+
+    public function deleteAdmin($id){
+        //delete attribute
+        Admin::where('id',$id)->delete();
+
+        $message = "Admin has been deleted successfully!";
+        session::flash('success_message', $message);
+        return redirect()->back();
+    }
+
+    public function addEditAdminSubadmin(Request $request, $id=null)
+    {
+        if($id==""){
+            //Add Admin/Sub-Admin
+            $title   = "Add Admin/Sub-Admin";
+            $admindata = new Admin;
+            $message = "Admin/Sub-Admin added successfully!";
+        }else{
+            // Edit Admin/Sub-Admin
+            $title = "Edit Admin/Sub-Admin";
+            $admindata = Admin::find($id);
+            $message = "Admin/Sub-Admin updated successfully!";
+        }
+
+        if($request->isMethod('post')){
+            $data = $request->all();
+            // echo "<pre>"; print_r($data); die; //printing the user input
+            if($id == ""){
+                $adminCount = Admin::where('email',$data['admin_email'])->count();
+                if($adminCount > 0){
+                    Session::flash('error_message','Admin/Sub-Admin already exists!');
+                    return redirect('admin/admins-subadmins');
+                }
+            }
+            $rules = [
+                'admin_name' => 'required|regex:/^[\pL\s\-]+$/u ',
+                'admin_mobile' => 'required|numeric',
+                'admin_image' => 'image'
+            ];
+
+            $customMessages = [ 
+                'admin_name.required' => 'Name is required',
+                'admin_name.alpha' => 'Valid Name is required',
+                'admin_mobile.required' => 'Mobile is required',
+                'admin_mobile.numeric' => 'Valid Mobile is required',
+                'admin_image.image' => 'Valid image is required',
+            ];
+
+            $this->validate($request,$rules,$customMessages);
+
+            //uploadnImage
+            if($request->hasFile('admin_image')){
+                $image_temp = $request->file('admin_image');
+                if ($image_temp->isValid()) {
+                    //Get Image extension
+                    $extension = $image_temp->getClientOriginalExtension();
+                    //Generate New Image name
+                    $imageName = rand(111,99999).'.'.$extension;
+                    $imagePath = 'images/admin_images/admin_photos/'.$imageName;
+                    //upload the Image
+                    Image::make($image_temp)->save($imagePath);
+                }
+                // elseif (!empty($data['current_admin_image'])) {
+                //     $imageName = $data['current_admin_image'];
+                // }else {
+                //     $imageName = "no-admin-image.jpg";
+                // }
+            }else if(!empty($data['current_admin_image'])){
+                $imageName = $data['current_admin_image'];
+            }else{
+                $imageName = "no-admin-image.jpg";
+            }
+            
+            $admindata->image = $imageName;
+            $admindata->name = $data['admin_name'];
+            $admindata->mobile = $data['admin_mobile'];
+            if($id==""){
+                $admindata->email = $data['admin_email'];
+                $admindata->type = $data['admin_type'];
+            }
+            if($data['admin_password'] != ""){
+                $admindata->password = bcrypt($data['admin_password']);
+            }
+            $admindata->save();
+            Session::flash('success_message', $message);
+            return redirect('admin/admins-subadmins');
+
+        }
+        return view('admin.admins_subadmins.add_edit_admin_subadmin')->with(compact('title','admindata'));
+    }
+    
+    public function updateRole(Request $request, $id=null)
+    {
+        if ($request->isMethod('post')) {
+            $data = $request->all();
+            unset($data['_token']);
+            
+            AdminsRole::where('admin_id',$id)->delete();
+            
+            foreach ($data as $key => $value) {
+                if(isset($value['view'])){
+                    $view = $value['view'];
+                }else{
+                    $view = 0;
+                }
+                if(isset($value['edit'])){
+                    $edit = $value['edit'];
+                }else{
+                    $edit = 0;
+                }
+                if(isset($value['full'])){
+                    $full = $value['full'];
+                }else{
+                    $full = 0;
+                }
+
+                AdminsRole::insert(['admin_id' => $id, 'module'=>$key,
+                'view_access'=>$view,'edit_access'=>$edit,'full_access'=>$full]);
+            }
+
+            $message = "Roles Updated successfully!";
+            Session::flash('success_message',$message);
+            return redirect()->back();
+        }
+        $adminDetails = Admin::where('id',$id)->first()->toArray();
+        $adminRoles = AdminsRole::where('admin_id',$id)->get()->toArray();
+        $title = "Update ".$adminDetails['name']."(".$adminDetails['type'].")"." Roles/Permissions";
+        return view('admin.admins_subadmins.update_roles')->with(compact('title','adminDetails','adminRoles'));
     }
 }
