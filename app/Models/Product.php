@@ -137,4 +137,21 @@ class Product extends Model
     public static function deleteCartProduct($product_id){
         Cart::where('product_id',$product_id)->delete();
     }
+
+    public static function productsCountForSubCategories($category_id)
+    {
+        $productsCount = Product::where(['category_id'=>$category_id,'status'=>1])->count();
+        return $productsCount;
+    }
+
+    public static function productsCount($category_id)
+    {
+        $catIds = Category::select('id')->where('parent_id',$category_id)->get()->toArray();
+        $catIds1 = array_flatten($catIds);
+        $catIds2 = array($category_id);
+        $catIds = array_merge($catIds1,$catIds2);
+        $productsCount = Product::whereIn('category_id',$catIds)->where('status',1)->count();
+        return $productsCount;
+        
+    }
 }

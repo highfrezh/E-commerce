@@ -64,6 +64,7 @@
             <hr class="soft">
             <small>{{ $total_stock }} items in stock</small>
             <div>&nbsp;</div>
+            @if($avgStarRating>0)
             <div>
                 <?php
                 $star = 1;
@@ -71,6 +72,7 @@
                 <span style="color: gold;">&#9733;</span>
                 <?php $star++; } ?>({{ $avgRating }})
             </div>
+            @endif
 
             @if(count($groupProducts)>0)
             <div>
@@ -139,11 +141,12 @@
                 </div>
             </form>
         </div>
-
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+        <div class="addthis_inline_share_toolbox"></div>
 
         <hr class="soft clr">
         <p class="span6">
-            {{$productDetails['description']}}
+            <?php echo $productDetails['description']; ?>
 
         </p>
         <a class="btn btn-small pull-right" href="#detail">More Details</a>
@@ -215,7 +218,9 @@
                 </table>
 
                 <h5>Washcare</h5>
-                <p>{{ $productDetails['wash_care'] }}</p>
+                <p>
+                    <?php echo $productDetails['wash_care']; ?>
+                </p>
                 <h5>Disclaimer</h5>
                 <p>
                     There may be a slight color variation between the image shown and original product.

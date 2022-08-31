@@ -44,7 +44,8 @@
                         <div class="control-group" style="float: left; margin-top: -2px; margin-right: 5px;">
                             <input type="radio" id="address{{ $address['id'] }}" name="address_id"
                                 value="{{ $address['id'] }}" shipping_charges="{{ $address['shipping_charges'] }}"
-                                total_price="{{ $total_price }}" coupon_amount="{{ Session::get('couponAmount') }}">
+                                gst_charges="{{ $address['gst_charges'] }}" total_price="{{ $total_price }}"
+                                coupon_amount="{{ Session::get('couponAmount') }}">
                         </div>
                         <div class="control-group">
                             <label class="control-label">{{ $address['name'] }}, {{ $address['address'] }}, {{
@@ -113,16 +114,21 @@
                     <td class="shipping_charges">$0</td>
                 </tr>
                 <tr>
+                    <td colspan="6" style="text-align:right">GST Charges: </td>
+                    <td class="gst_charges">${{ $totalGST }}</td>
+                </tr>
+                <tr>
                     <td colspan="6" style="text-align:right"><strong>GRAND TOTAL (${{ $total_price }} - <span
                                 class="couponAmount">@if(Session::has('couponAmount'))
                                 ${{ Session::get('couponAmount') }}
                                 @else
                                 $0.00
-                                @endif</span> + <span class="shipping_charges">$0</span>) =</strong>
+                                @endif</span> + <span class="gst_charges">${{ $totalGST }}</span> + <span
+                                class="shipping_charges">$0</span>) =</strong>
                     </td>
                     <td class="label label-important" style="display:block"> <strong class="grand_total">${{
                             $grand_total =
-                            $total_price -
+                            $total_price + $totalGST -
                             Session::get('couponAmount')
                             }}
                             <?php Session::put('grand_total', $grand_total);?>

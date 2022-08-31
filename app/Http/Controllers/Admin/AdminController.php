@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin;
 use App\Models\AdminsRole;
+use App\Models\OrderSetting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -296,5 +297,22 @@ class AdminController extends Controller
         $adminRoles = AdminsRole::where('admin_id',$id)->get()->toArray();
         $title = "Update ".$adminDetails['name']."(".$adminDetails['type'].")"." Roles/Permissions";
         return view('admin.admins_subadmins.update_roles')->with(compact('title','adminDetails','adminRoles'));
+    }
+
+    public function orderSettings(Request $request)
+    {
+        Session::put('page', 'order settings');
+
+        $orderSettings = OrderSetting::where('id',1)->first()->toArray();
+        // dd($orderSettings);die;
+        $title = "Other Settings";
+        if ($request->isMethod('post')) {
+            OrderSetting::where('id',1)->update(['min_cart_value' => $request['min_cart_value'],
+            'max_cart_value' => $request['max_cart_value']]);
+            $message = "Min/Max Cart Value updated successfully!";
+            Session::flash('success_message',$message);
+            return redirect()->back();
+        }
+        return view('admin.order_settings')->with(compact('title','orderSettings'));
     }
 }

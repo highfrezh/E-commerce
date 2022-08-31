@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Front\IndexController;
 use App\Http\Controllers\Front\UsersController;
-use App\Http\Controllers\front\OrdersController;
+use App\Http\Controllers\Admin\ImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +24,7 @@ use App\Http\Controllers\front\OrdersController;
 // Route::get('/', function () {
     //     return view('welcome');
     // });
+use App\Http\Controllers\front\OrdersController;
 use App\Http\Controllers\Front\PaypalController;
 use App\Http\Controllers\Admin\BannersController;
 use App\Http\Controllers\Admin\CouponsController;
@@ -43,7 +44,7 @@ use App\Http\Controllers\Admin\AdminNewsletterController;
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::prefix('/admin')->namespace('Admin')->group(function () {
     // All the admin route will be define here :-
@@ -70,7 +71,7 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
         Route::get('categories', [CategoryController::class, 'categories']);
         Route::post('update-category-status', [CategoryController::class, 'updateCategoryStatus']);
         Route::match(['get', 'post'], 'add-edit-category/{id?}', [CategoryController::class, 'addEditCategory']);
-        Route::post('append-categories-level', [CategoryController::class, 'appendCategoryLevel']);
+        Route::get('append-categories-level', [CategoryController::class, 'appendCategoryLevel']);
         Route::get('delete-category-image/{id}', [CategoryController::class, 'deleteCategoryImage']);
         Route::get('delete-category/{id}', [CategoryController::class, 'deleteCategory']);
         
@@ -111,6 +112,9 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
         Route::post('update-order-status', [AdminOrdersController::class, 'updateOrderStatus']);
         Route::get('view-order-invoice/{id}', [AdminOrdersController::class, 'viewOrderInvoice']);
         Route::get('print-pdf-invoice/{id}', [AdminOrdersController::class, 'printPDFInvoice']);
+
+        //Export Orders
+        Route::get('export-orders', [AdminOrdersController::class, 'exportOrders']);
         
         //Shipping Charges Routes
         Route::get('view-shipping-charges', [ShippingController::class, 'viewShippingCharges']);
@@ -120,6 +124,12 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
         //Front User for  Route
         Route::get('users',[AdminUserController::class, 'users']);
         Route::post('update-user-status', [AdminUserController::class, 'updateUserStatus']);
+
+        //view user chart 
+        Route::get('view-users-charts', [AdminUserController::class, 'viewUsersCharts']);
+
+        // Export users
+        Route::get('export-users', [AdminUserController::class, 'exportUsers']);
         
         //CMS pages Route
         Route::get('cms-pages',[CmsController::class, 'cmspages']);
@@ -156,6 +166,17 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
         Route::get('newsletter-subscribers',[AdminNewsletterController::class, 'newsletterSubscribers']);
         Route::post('update-subscriber-status', [AdminNewsletterController::class, 'updateSubscriberStatus']);
         Route::get('delete-subscriber/{id}', [AdminNewsletterController::class, 'deleteSubscriber']);
+        Route::get('export-newsletter-emails', [AdminNewsletterController::class, 'exportNewsletterEmails']);
+
+        //Import COD Pincode
+        Route::match(['get', 'post'], 'update-cod-pincodes', [ImportController::class, 'updateCODPincodes']);
+
+        //Import Prepaid Pincode
+        Route::match(['get', 'post'], 'update-prepaid-pincodes', [ImportController::class, 'updatePrepaidPincodes']);
+
+        //Order Settings
+        Route::match(['get', 'post'], 'order-setting', [AdminController::class, 'orderSettings']);
+
     });
 });
 

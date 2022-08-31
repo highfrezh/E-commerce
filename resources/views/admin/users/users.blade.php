@@ -35,10 +35,22 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Users Table</h3>
-                            <a href="{{ url('admin/add-edit-user') }}"
-                                style="max-width: 150px; float:right; display: inline-block;"
-                                class="btn btn-block btn-success">Add User
-                            </a>
+                            <table align="right">
+                                <tr>
+                                    <td>
+                                        <a href="{{ url('admin/add-edit-user') }}"
+                                            style="max-width: 150px; float:right; display: inline-block;"
+                                            class="btn btn-block btn-success">Add User
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url('admin/export-users') }}"
+                                            style="max-width: 150px; float:right; display: inline-block;"
+                                            class="btn btn-block btn-primary">Export Users
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">

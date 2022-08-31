@@ -52,21 +52,21 @@
         <tr>
             <td colspan="6" style="text-align:right">Coupon Discount: </td>
             <td class="couponAmount">
-                @if(Session::has('couponAmount'))
+                {{-- @if(Session::has('couponAmount'))
                 ${{ Session::get('couponAmount') }}
                 @else
                 $0.00
-                @endif
+                @endif --}}
             </td>
         </tr>
         <tr>
             <td colspan="6" style="text-align:right"><strong>GRAND TOTAL (${{ $total_price }} - <span
                         class="couponAmount">
-                        @if(Session::has('couponAmount'))
+                        {{-- @if(Session::has('couponAmount'))
                         ${{ Session::get('couponAmount') }}
                         @else
                         $0.00
-                        @endif
+                        @endif --}}
                     </span>) =</strong>
             </td>
             <td class="label label-important" style="display:block"> <strong class="grand_total">${{

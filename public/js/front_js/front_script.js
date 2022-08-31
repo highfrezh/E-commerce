@@ -35,7 +35,8 @@ $(document).ready(function(){
         return filter;
     }
 
-    $(".fabric").on('click',function(){
+    $(".brand").on('click',function(){
+        var brand = get_filter("brand");
         var fabric = get_filter("fabric");
         var sleeve = get_filter("sleeve");
         var fit = get_filter("fit");
@@ -46,7 +47,28 @@ $(document).ready(function(){
         $.ajax({
             url:url,
             method:"post",
-            data:{fabric:fabric,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
+            data:{brand:brand,fabric:fabric,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
+            success:function(data){
+                $('.filter_products').html(data);
+            }
+        }) 
+        
+
+    });
+
+    $(".fabric").on('click',function(){
+        var brand = get_filter("brand");
+        var fabric = get_filter("fabric");
+        var sleeve = get_filter("sleeve");
+        var fit = get_filter("fit");
+        var pattern = get_filter("pattern");
+        var occasion = get_filter("occasion");
+        var sort = $("#sort option:selected").text();
+        var url = $("#url").val();
+        $.ajax({
+            url:url,
+            method:"post",
+            data:{fabric:fabric,brand:brand,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
             success:function(data){
                 $('.filter_products').html(data);
             }
@@ -56,6 +78,7 @@ $(document).ready(function(){
     });
 
     $(".sleeve").on('click',function(){
+        var brand = get_filter("brand");
         var fabric = get_filter("fabric");
         var sleeve = get_filter("sleeve");
         var fit = get_filter("fit");
@@ -66,7 +89,7 @@ $(document).ready(function(){
         $.ajax({
             url:url,
             method:"post",
-            data:{fabric:fabric,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
+            data:{fabric:fabric,brand:brand,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
             success:function(data){
                 $('.filter_products').html(data);
             }
@@ -76,6 +99,7 @@ $(document).ready(function(){
     })
 
     $(".fit").on('click',function(){
+        var brand = get_filter("brand");
         var fabric = get_filter("fabric");
         var sleeve = get_filter("sleeve");
         var fit = get_filter("fit");
@@ -86,7 +110,7 @@ $(document).ready(function(){
         $.ajax({
             url:url,
             method:"post",
-            data:{fabric:fabric,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
+            data:{fabric:fabric,brand:brand,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
             success:function(data){
                 $('.filter_products').html(data);
             }
@@ -96,6 +120,7 @@ $(document).ready(function(){
     })
 
     $(".pattern").on('click',function(){
+        var brand = get_filter("brand");
         var fabric = get_filter("fabric");
         var sleeve = get_filter("sleeve");
         var fit = get_filter("fit");
@@ -106,7 +131,7 @@ $(document).ready(function(){
         $.ajax({
             url:url,
             method:"post",
-            data:{fabric:fabric,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
+            data:{fabric:fabric,brand:brand,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
             success:function(data){
                 $('.filter_products').html(data);
             }
@@ -116,6 +141,7 @@ $(document).ready(function(){
     })
 
     $(".occasion").on('click',function(){
+        var brand = get_filter("brand");
         var fabric = get_filter("fabric");
         var sleeve = get_filter("sleeve");
         var fit = get_filter("fit");
@@ -126,7 +152,7 @@ $(document).ready(function(){
         $.ajax({
             url:url,
             method:"post",
-            data:{fabric:fabric,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
+            data:{fabric:fabric,brand:brand,sleeve:sleeve,fit:fit,pattern:pattern,occasion:occasion, sort:sort, url:url},
             success:function(data){
                 $('.filter_products').html(data);
             }
@@ -222,7 +248,7 @@ $(document).ready(function(){
 				mobile: {
 					required: true,
 					minlength: 10,
-					maxlength: 10,
+					maxlength: 20,
 					digits: true
 				},
                 email: {
@@ -240,7 +266,7 @@ $(document).ready(function(){
 				mobile: {
 					required: "Please enter a mobile",
 					minlength: "Your mobile must consist of 10 characters",
-					maxlength: "Your mobile must consist of 10 characters",
+					maxlength: "Your mobile must consist of 20 characters",
 					digits: "Please enter your valid mobile"
 				},
                 email: {
@@ -388,13 +414,15 @@ $(document).ready(function(){
         //Calculate Shipping Charges and Update Grand total
         $("input[name=address_id]").bind('change',function(){
             var shipping_charges = $(this).attr("shipping_charges");
+            var gst_charges = $(this).attr("gst_charges");
             var total_price = $(this).attr("total_price");
             var coupon_amount = $(this).attr("coupon_amount");
             if(coupon_amount == ""){
                 coupon_amount = 0; 
             }
             $(".shipping_charges").html("$"+shipping_charges);
-            var grand_total = parseInt(total_price) + parseInt(shipping_charges) - parseInt(coupon_amount);
+            $(".gst_charges").html("$"+gst_charges);
+            var grand_total = parseInt(total_price) + parseInt(shipping_charges) + parseInt(gst_charges) - parseInt(coupon_amount);
             $(".grand_total").html("$"+ grand_total);
         });
 

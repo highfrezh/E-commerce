@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Models\Sms;
 use App\Models\Cart;
 use App\Models\User;
+use App\Models\Brand;
 use App\Models\Order;
 use App\Models\Coupon;
 use App\Models\Rating;
@@ -13,6 +14,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Wishlist;
+use App\Models\OrderSetting;
 use Illuminate\Http\Request;
 use App\Models\OrdersProduct;
 use App\Models\ShippingCharge;
@@ -43,6 +45,12 @@ class FrontProductsController extends Controller
                 $categoryProducts = Product::with('brand')->whereIn('category_id',$categoryDetails['catIds'])->
                 where('status',1); //WhereIn is use the pass second argurment of Array
 
+                // if brand option is selected
+                if (isset($data['brand']) && !empty($data['brand'])) {
+                    $brandIds = Brand::select('id')->whereIn('name',$data['brand'])->pluck('id');
+                    // dd($brandIds);die;
+                    $categoryProducts->whereIn('products.brand_id',$brandIds); // "products.fabric" means products table fabric column;
+                }
                 // if fabric option is selected
                 if (isset($data['fabric']) && !empty($data['fabric'])) {
                     $categoryProducts->whereIn('products.fabric',$data['fabric']); // "products.fabric" means products table fabric column;
@@ -130,12 +138,16 @@ class FrontProductsController extends Controller
                 $fitArray = $productFilters['fitArray'];
                 $occasionArray = $productFilters['occasionArray'];
 
+                //Brand filter
+                $brandArray = Brand::select('name')->where('status',1)->pluck('name');
+                // dd($brandArray);die;
+
                 $page_name = "listing";
                 $meta_title = $categoryDetails['catDetails']['meta_title'];
                 $meta_description = $categoryDetails['catDetails']['meta_description'];
                 $meta_keywords = $categoryDetails['catDetails']['meta_keywords'];
                 return view('front.products.listing')->with(compact('categoryDetails','categoryProducts','url','fabricArray',
-                'sleeveArray','patternArray','fitArray','occasionArray','page_name','meta_title','meta_description','meta_keywords'));
+                'sleeveArray','patternArray','fitArray','occasionArray','brandArray','page_name','meta_title','meta_description','meta_keywords'));
             }else{
                 abort(404);
             }
@@ -201,20 +213,23 @@ class FrontProductsController extends Controller
     {
         if ($request->isMethod('post')) {
             $data =  $request->all();
-
-            if($data['quantity']<=0 || $data['quantity']=""){
+            
+            
+            if($data['quantity'] <= 0 || $data['quantity'] == ""){
                 $data['quantity'] = 1;
             }
-            
+
             //check If the product selected is in the Stock
             $getProductStock = ProductsAttribute::where(['product_id' => $data['product_id'],'size'
             =>$data['size']])->first()->toArray();
+
             if ($getProductStock['stock'] < $data['quantity']) {
                 $message = "Required Quantity is not available!";
                 Session::flash('error_message',$message);
                 return redirect()->back();
             }
 
+            
             // Generate Session Id if not exists
             $session_id = Session::get('session_id');
             
@@ -289,8 +304,8 @@ class FrontProductsController extends Controller
                 $userCartItems = Cart::userCartItems();
                 return response()->json([
                     'status' => false,
-                    'view' =>(String)View::make('front.products.cart_items')->with(compact('
-                    userCartItems'))
+                    'view' => (String)View::make('front.products.cart_items')->
+                        with(compact('userCartItems'))
                 ]);
             }
             Cart::where('id', $data['cartid'])->update(['quantity'=>$data['qty']]);
@@ -389,6 +404,7 @@ class FrontProductsController extends Controller
                 if(!in_array($item['product']['category_id'],$catArr)){
                     $message = 'This coupon code is not for one of the selected products!';
                 }
+
                 if(!empty($couponDetails->users)){
                     if (!in_array($item['user_id'], $userID)) {
                         $message = 'This coupon is not for you!';
@@ -447,11 +463,37 @@ class FrontProductsController extends Controller
 
         $total_price = 0;
         $total_weight = 0;
+        $totalGST = 0;
         foreach($userCartItems as $item){
             $product_weight = $item['product']['product_weight'];
             $total_weight = $total_weight + ($product_weight * $item['quantity']);
             $attrPrice = Product::getDiscountedAttrPrice($item['product_id'],$item['size']);
             $total_price = $total_price + ($attrPrice['final_price'] * $item['quantity']);
+
+            $product_total_price = $attrPrice['final_price'] * $item['quantity'];
+
+            //Calculate GST for item
+            $getGSTPercent = Product::select('product_gst')->where('id',$item['product_id'])->first();
+            $getPercent = $getGSTPercent->product_gst;
+            $gstAmount = round($product_total_price * $getPercent/100, 2);
+            $totalGST = $totalGST + $gstAmount;
+        }
+
+        //Get Min/Max Cart Amount
+        $orderSettings = OrderSetting::where('id',1)->first()->toArray();
+
+        //Check Min Cart price
+        if ($total_price < $orderSettings['min_cart_value']) {
+            $error_message = "Min Cart Amount must be".$orderSettings['min_cart_value'];
+            Session::put('error_message',$error_message);
+            return redirect()->back();
+        }
+
+        //Check Max Cart price
+        if ($total_price > $orderSettings['max_cart_value']) {
+            $error_message = "Max Cart Amount must not >".$orderSettings['max_cart_value'];
+            Session::put('error_message',$error_message);
+            return redirect()->back();
         }
 
         $deliveryAddresses = DeliveryAddress::deliveryAddresses();
@@ -459,6 +501,7 @@ class FrontProductsController extends Controller
         foreach ($deliveryAddresses as $key => $value) {
             $shippingCharges = ShippingCharge::getShippingCharges($total_weight, $value['country']);
             $deliveryAddresses[$key]['shipping_charges'] = $shippingCharges;
+            $deliveryAddresses[$key]['gst_charges'] = $totalGST;
         }
 
         if($request->isMethod('post')){
@@ -527,7 +570,7 @@ class FrontProductsController extends Controller
                 $payment_method = "Prepaid";
                 $order_status = "Pending";
             }
-            die;
+            // die;
             //Get Delivery address from address id
             $deliveryAddress = DeliveryAddress::where('id',$data['address_id'])->first()->toArray();
             // dd($deliveryAddress); die;
@@ -536,7 +579,7 @@ class FrontProductsController extends Controller
             $shipping_charges = ShippingCharge::getShippingCharges($total_weight, $deliveryAddress['country']); 
 
             // Calculate Grand Total
-            $grand_total = $total_price + $shipping_charges - Session::get('couponAmount');
+            $grand_total = $total_price + $shipping_charges + $totalGST - Session::get('couponAmount');
 
             // Insert Grand Total in Session Variable
             Session::put('grand_total',$grand_total);
@@ -554,6 +597,7 @@ class FrontProductsController extends Controller
             $order->mobile = $deliveryAddress['mobile'];
             $order->email = Auth::user()->email;
             $order->shipping_charges = $shipping_charges;
+            $order->gst_charges = $totalGST;
             $order->coupon_code = Session::get('couponCode');
             $order->coupon_amount = Session::get('couponAmount');
             $order->order_status = $order_status;
@@ -632,7 +676,7 @@ class FrontProductsController extends Controller
 
         }
         $meta_title = "Checkout Page - E-commerce Website";
-        return view('front.products.checkout')->with(compact('userCartItems','deliveryAddresses','total_price','meta_title'));
+        return view('front.products.checkout')->with(compact('userCartItems','deliveryAddresses','total_price','meta_title','totalGST'));
     }
 
     public function thanks(){

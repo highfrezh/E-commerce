@@ -22,11 +22,10 @@ class UsersController extends Controller
 
     public function registerUser(Request $request)
     {
-        if ($request->isMethod('post')) {
-            Session::forget('error_message');
-            Session::forget('success_message');
+        if($request->isMethod('post')){
             $data = $request->all();
-            // echo "<pre>"; print_r($data); die;
+            // echo "<pre>"; print_r($data);die;
+
             //Check if User already exists 
             $userCount = User::where('email', $data['email'])->count();
             if ($userCount > 0) {
@@ -34,7 +33,7 @@ class UsersController extends Controller
                 Session::flash('error_message', $message);
                 return redirect()->back();
             }else{
-                //Register The User
+                //Register the User
                 $user = new User;
                 $user->name = $data['name'];
                 $user->mobile = $data['mobile'];
@@ -43,7 +42,12 @@ class UsersController extends Controller
                 $user->status = 0;
                 $user->save();
 
-                //send corfirmation Email to user
+                //send register sms 
+                $message = "Dear customer, you have been successfully registered with frezhwebsite. Login to your account to access available offers.";
+                $mobile = $data['mobile'];
+                Sms::sendSms($message, $mobile);
+
+                //send confirmation Email to user
                 $email = $data['email'];
                 $messageData = [
                     'email' => $data['email'],
@@ -58,30 +62,6 @@ class UsersController extends Controller
                 $message = "Please confirm your email to activate your account!";
                 Session::put('success_message',$message);
                 return redirect()->back();
-
-                // if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']])) {
-                //      //update User cart with user id
-                // if (!empty(Session::get('session_id'))) {
-                //     $user_id = Auth::user()->id;
-                //     $session_id = Session::get('session_id');
-                //     Cart::where('session_id', $session_id)->update(['user_id'=>$user_id]);
-                // }
-
-                // //send register sms 
-
-                // // $message = "Dear customer, you have been successfully registered with frezhwebsite. Login to your account to access available offers.";
-                // // $mobile = $data['mobile'];
-                // // Sms::sendSms($message, $mobile);
-
-                // //Send Register Email
-                // $email = $data['email'];
-                // $messageData = ['name'=> $data['name'],'mobile'=>$data['mobile'],'email'=>$data['email']];
-                // Mail::send('emails.register',$messageData, function($message) use($email){
-                //     $message->to($email)->subject('Welcome to Frezhwebsite.');
-                // });
-
-                //     return redirect('/');
-                // }
             }
         }
     }
@@ -96,7 +76,7 @@ class UsersController extends Controller
         // Check User Email exists
         $userCount = User::where('email',$email)->count();
         if ($userCount > 0) {
-            //user Email is already activated or not
+            //Check user Email is already activated or not
             $userDetails = User::where('email',$email)->first();
             if ($userDetails->status == 1) {
                 $message = "Your Email account is already activated. You can login now.";
@@ -188,9 +168,8 @@ class UsersController extends Controller
                 Session::put('error_message', $message);
                 Session::forget('success_message');
                 return redirect()->back();
-            }
-            // laravel help is needed install via composer to generate random password!....
-
+            }     
+            
             // Generate Random Password
             // echo $random_password = str_random(8); die;
             $random_password = str_random(8);

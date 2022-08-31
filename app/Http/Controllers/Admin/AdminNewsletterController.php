@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use App\Exports\subscribersExport;
 use App\Http\Controllers\Controller;
 use App\Models\NewsletterSubscriber;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 
 class AdminNewsletterController extends Controller
@@ -38,5 +40,10 @@ class AdminNewsletterController extends Controller
         $message = "Subscriber has been deleted successfully!";
         Session::flash('success_message', $message);
         return redirect()->back();
+    }
+
+    public function exportNewsletterEmails()
+    {
+        return Excel::download(new subscribersExport,'subscribers.xlsx');
     }
 }

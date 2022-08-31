@@ -16,7 +16,7 @@
         <p>Please make payment by clicking on below Payment button </p>
         <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="POST">
             <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="accout_name_from_sendbox_paypal">
+            <input type="hidden" name="business" value="sb-hbrci16324923@business.example.com">
             <input type="hidden" name="item_name" value="{{ Session::get('order_id') }}">
             <input type="hidden" name="currency_code" value="USD">
             <input type="hidden" name="amount" value="{{ round(Session::get('grand_total'),2) }}">

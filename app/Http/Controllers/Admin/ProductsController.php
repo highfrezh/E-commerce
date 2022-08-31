@@ -163,6 +163,7 @@ class ProductsController extends Controller
             $product->group_code = $data['group_code'];
             $product->product_price = $data['product_price'];
             $product->product_discount = $data['product_discount'];
+            $product->product_gst = $data['product_gst'];
             $product->product_weight = $data['product_weight'];
             $product->description = $data['description'];
             $product->wash_care = $data['wash_care'];

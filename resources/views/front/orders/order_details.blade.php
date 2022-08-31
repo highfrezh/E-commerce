@@ -74,6 +74,10 @@ $getOrderStatus = Order::getOrderStatus($orderDetails['id']);
                     <td>${{ $orderDetails['shipping_charges'] }}.00</td>
                 </tr>
                 <tr>
+                    <td>GST Charges</td>
+                    <td>${{ $orderDetails['gst_charges'] }}.00</td>
+                </tr>
+                <tr>
                     <td>Coupon Code</td>
                     <td>{{ $orderDetails['coupon_code'] }}</td>
                 </tr>

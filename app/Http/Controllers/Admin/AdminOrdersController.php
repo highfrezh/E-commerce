@@ -10,12 +10,14 @@ use App\Models\OrdersLog;
 use App\Models\AdminsRole;
 use App\Models\OrderStatus;
 use Illuminate\Http\Request;
+use App\Exports\ordersExport;
 use App\Models\OrdersProduct;
 use App\Models\ReturnRequest;
 use App\Models\ExchangeRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 
 class AdminOrdersController extends Controller
@@ -116,15 +118,20 @@ class AdminOrdersController extends Controller
         $orderDetails = Order::with('orders_products')->where('id',$id)->first()->toArray();
         $userDetails = User::where('id', $orderDetails['user_id'])->first()->toArray();   
         
-        $output = "";
-        //instantiate and use the dompdf class
+        $output = "<html> testing </html>";
+
+        
+        // instantiate and use the dompdf class
         $dompdf = new Dompdf();
         $dompdf->loadHtml($output);
-        
-        //(Optional) setup the paper size and orientation
+
+        // (Optional) Setup the paper size and orientation
         $dompdf->setPaper('A4', 'landscape');
 
-        //Render the HTML as PDF to Browser
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser
         $dompdf->stream();
 
         return view('admin.orders.order_invoice')->with(compact('orderDetails','userDetails'));
@@ -206,5 +213,10 @@ class AdminOrdersController extends Controller
             Session::flash('success_message',$message);
             return redirect('admin/exchange-requests');
         }
+    }
+
+    public function exportOrders()
+    {
+        return Excel::download(new ordersExport, 'orders.csv');
     }
 }

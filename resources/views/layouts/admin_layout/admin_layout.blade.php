@@ -121,6 +121,12 @@
         });
         });
     </script>
+    <script>
+        $(function () {
+            //Summernote
+            $('.textarea').summernote();
+        })
+    </script>
 </body>
 
 </html>

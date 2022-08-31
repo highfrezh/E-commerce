@@ -1,5 +1,6 @@
 <?php 
 use App\Models\Section;
+use App\Models\Product;
 $sections = Section::sections();
 // echo "<pre>"; print_r($sections); die;
 ?>
@@ -13,13 +14,19 @@ $sections = Section::sections();
         @if(count($section['categories']) > 0)
         <li class="subMenu"><a>{{ $section['name'] }}</a>
             @foreach ($section['categories'] as $category)
+            @php
+            $productsCount = Product::productsCount($category['id'])
+            @endphp
             <ul>
                 <li><a href="{{ url($category['url']) }}"><i class="icon-chevron-right"></i><strong>{{
                             $category['category_name']
-                            }}</strong></a></li>
+                            }}({{ $productsCount }})</strong></a></li>
                 @foreach ($category['subcategories'] as $subcategory )
+                @php
+                $productsCountForSubcat = Product::productsCountForSubCategories($subcategory['id'])
+                @endphp
                 <li><a href="{{ url($subcategory['url']) }}"><i class="icon-chevron-right"></i>{{
-                        $subcategory['category_name'] }}</a>
+                        $subcategory['category_name'] }}({{ $productsCountForSubcat }})</a>
                 </li>
                 @endforeach
             </ul>
@@ -30,6 +37,14 @@ $sections = Section::sections();
     </ul>
     <br>
     @if (isset($page_name) && $page_name == "listing" && !isset($_REQUEST['search']))
+    <div class="well well-small">
+        <h5>Fabric</h5>
+        @foreach ($brandArray as $brand)
+        <input class="brand" type="checkbox" style="margin-top: -3px;" name="brand[]" id="{{ $brand }}"
+            value="{{ $brand }}">
+        &nbsp;&nbsp;{{ $brand }}<br>
+        @endforeach
+    </div>
     <div class="well well-small">
         <h5>Fabric</h5>
         @foreach ($fabricArray as $fabric)

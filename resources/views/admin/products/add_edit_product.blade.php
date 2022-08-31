@@ -169,6 +169,13 @@
                                     </div>
                                     @endif
                                 </div>
+                                <div class="form-group">
+                                    <label for="product_gst">Product GST (%)</label>
+                                    <input type="text" name="product_gst" class="form-control" id="product_gst"
+                                        placeholder="GST in %" @if(!empty($productdata['product_gst']))
+                                        value="{{ $productdata['product_gst'] }}" @else value="{{ old('product_gst') }}"
+                                        @endif>
+                                </div>
                             </div>
                         </div>
 
@@ -195,7 +202,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="decription">Product Description</label>
-                                    <textarea placeholder="Enter text" class="form-control" name="description"
+                                    <textarea placeholder="Enter text" class="form-control textarea" name="description"
                                         id="description" rows="3" placeholder="Enter ...">@if(!empty($productdata['description'])){{ $productdata['description'] }}
                                         @else {{ old('description') }}
                                         @endif
@@ -206,7 +213,7 @@
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label for="wash_care">Wash Care</label>
-                                    <textarea placeholder="Enter text" class="form-control" name="wash_care"
+                                    <textarea placeholder="Enter text" class="form-control textarea" name="wash_care"
                                         id="wash_care" rows="3" placeholder="Enter ...">@if(!empty($productdata['wash_care'])){{ $productdata['wash_care'] }}
                                         @else {{ old('wash_care') }}
                                         @endif
@@ -288,7 +295,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="meta_keywords">Meta Keywords</label>
-                                    <textarea placeholder="Enter text" class="form-control" id="meta_keywords"
+                                    <textarea placeholder="Enter text" class="form-control textarea" id="meta_keywords"
                                         name="meta_keywords" rows="3" placeholder="Enter ...">@if(!empty($productdata['meta_keywords'])){{ $productdata['meta_keywords'] }}
                                         @else {{ old('meta_keywords') }}
                                         @endif
@@ -298,8 +305,8 @@
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label for="meta_description">Meta Description</label>
-                                    <textarea placeholder="Enter text" class="form-control" name="meta_description"
-                                        id="meta_description" rows="3" placeholder="Enter ...">@if(!empty($productdata['meta_description'])){{ $productdata['meta_description'] }}
+                                    <textarea placeholder="Enter text" class="form-control textarea"
+                                        name="meta_description" id="meta_description" rows="3" placeholder="Enter ...">@if(!empty($productdata['meta_description'])){{ $productdata['meta_description'] }}
                                         @else{{ old('meta_description') }}
                                         @endif
                                     </textarea>

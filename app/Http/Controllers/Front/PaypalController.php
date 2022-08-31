@@ -54,8 +54,22 @@ class PaypalController extends Controller
                 // $mobile = Auth::user()->mobile;
                 // Sms::sendSms($message,$mobile);
 
-                // $orderDetails = Order::with('orders_products')->where('id',$order_id)->first()->toArray();
-                // $userDetails = User::where('id',$orderDetails['user_id'])->first()->toArray();
+                $orderDetails = Order::with('orders_products')->where('id',$order_id)->first()->toArray();
+                $userDetails = User::where('id',$orderDetails['user_id'])->first()->toArray();
+
+                
+            // Reduce stock script starts
+            foreach($orderDetails['orders_products'] as $oder ){
+                //current product stock
+                $getProductStock = ProductsAttribute::where(['product_id'=>$order['product_id'],
+                'size'=>$order['size']])->first()->toArray();
+                //calculate new stock
+                $newStock = $getProductStock['stock'] - $order['quantity'];
+                //Updare New stock
+                ProductsAttribute::where(['product_id' => $order['product_id'], 
+                'size' => $order['size']])->update(['stock' => $newStock]);
+            }
+            // Reduce stock script end
 
                 //Send Order Email
                 // $email = Auth::user()->email;

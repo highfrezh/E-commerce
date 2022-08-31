@@ -1,9 +1,37 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+<style>
+    .invoice-title h2,
+    .invoice-title h3 {
+        display: inline-block;
+    }
+
+    .table>tbody>tr>.no-line {
+        border-top: none;
+    }
+
+    .table>thead>tr>.no-line {
+        border-bottom: none;
+    }
+
+    .table>tbody>tr>.thick-line {
+        border-top: 2px solid;
+    }
+</style>
+
 <div class="container">
     <div class="row">
         <div class="col-xs-12">
             <div class="invoice-title">
                 <h2>Invoice</h2>
                 <h3 class="pull-right">Order # {{ $orderDetails['id'] }}</h3>
+                <br>
+                <span class="pull-right">
+                    <?php echo DNS1D::getBarcodeHTML($orderDetails['id'], 'C39'); ?>
+                </span>
+                <br>
             </div>
             <hr>
             <div class="row">
@@ -29,7 +57,7 @@
                     </address>
                 </div>
                 <hr>
-                <div class="col-xs-6 text-right">
+                <div class="col-xs-6">
                     <address>
                         <strong>Payment Method:</strong><br>
                         {{$orderDetails['payment_method']}}
@@ -71,9 +99,10 @@
                                 <tr>
                                     <td>
                                         Name: {{ $product['product_name'] }}<br>
-                                        Code: {{ $product['product_name'] }}<br>
-                                        Size: {{ $product['product_name'] }}<br>
-                                        Color: {{ $product['product_name'] }}<br>
+                                        Code: {{ $product['product_code'] }}<br>
+                                        Size: {{ $product['product_size'] }}<br>
+                                        Color: {{ $product['product_color'] }}<br>
+                                        <?php echo DNS1D::getBarcodeHTML($product['product_code'], 'C39'); ?>
                                     </td>
                                     <td class="text-center">$ {{ $product['product_price'] }}</td>
                                     <td class="text-center">{{ $product['product_qty'] }}</td>
@@ -88,27 +117,33 @@
                                 <tr>
                                     <td class="thick-line"></td>
                                     <td class="thick-line"></td>
-                                    <td class="thick-line text-center"><strong>Subtotal</strong></td>
+                                    <td class="thick-line text-right"><strong>Subtotal</strong></td>
                                     <td class="thick-line text-right">${{ $subTotal }}</td>
                                 </tr>
                                 <tr>
                                     <td class="no-line"></td>
                                     <td class="no-line"></td>
-                                    <td class="no-line text-center"><strong>Shipping</strong></td>
-                                    <td class="no-line text-right">$0</td>
+                                    <td class="no-line text-right"><strong>Shipping Charges</strong></td>
+                                    <td class="no-line text-right">$${{ $orderDetails['shipping_charges'] }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="no-line"></td>
+                                    <td class="no-line"></td>
+                                    <td class="no-line text-right"><strong>GST Charges</strong></td>
+                                    <td class="no-line text-right">$${{ $orderDetails['gst_charges'] }}</td>
                                 </tr>
                                 @if($orderDetails['coupon_amount'] >0)
                                 <tr>
                                     <td class="no-line"></td>
                                     <td class="no-line"></td>
-                                    <td class="no-line text-center"><strong>Discount</strong></td>
+                                    <td class="no-line text-right"><strong>Discount</strong></td>
                                     <td class="no-line text-right">${{ $orderDetails['coupon_amount'] }}</td>
                                 </tr>
                                 @endif
                                 <tr>
                                     <td class="no-line"></td>
                                     <td class="no-line"></td>
-                                    <td class="no-line text-center"><strong>Grand Total</strong></td>
+                                    <td class="no-line text-right"><strong>Grand Total</strong></td>
                                     <td class="no-line text-right">${{ $orderDetails['grand_total'] }}</td>
                                 </tr>
                             </tbody>

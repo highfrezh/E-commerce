@@ -89,7 +89,7 @@ $(document).ready(function(){
         var section_id = $(this).val();
         // alert(section_id);
         $.ajax({
-            type: 'post',
+            type: 'get',
             url: '/admin/append-categories-level',
             data: {section_id:section_id},
             success:function(resp){

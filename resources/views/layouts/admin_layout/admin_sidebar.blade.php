@@ -105,6 +105,18 @@
                             </a>
                         </li>
                         @endif
+                        {{-- Order Settings--}}
+                        @if (Session::get('page') == "order settings")
+                        <?php $active = "active"; ?>
+                        @else
+                        <?php $active = ""; ?>
+                        @endif
+                        <li class="nav-item">
+                            <a href="{{ url('admin/order-setting') }}" class="nav-link {{ $active }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Order Settings</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -322,8 +334,35 @@
                                 <p>Newsletter Subscriber</p>
                             </a>
                         </li>
-                    </ul>
                 </li>
+
+                {{-- Pincodes--}}
+                @if (Session::get('page') == "pincodes")
+                <?php $active = "active"; ?>
+                @else
+                <?php $active = ""; ?>
+                @endif
+                <li class="nav-item">
+                    <a href="{{ url('admin/update-cod-pincodes') }}" class="nav-link {{ $active }}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>COD Pincodes</p>
+                    </a>
+                </li>
+
+                {{-- Pincodes--}}
+                @if (Session::get('page') == "prepaid")
+                <?php $active = "active"; ?>
+                @else
+                <?php $active = ""; ?>
+                @endif
+                <li class="nav-item">
+                    <a href="{{ url('admin/update-prepaid-pincodes') }}" class="nav-link {{ $active }}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Prepaid Pincodes</p>
+                    </a>
+                </li>
+            </ul>
+            </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
